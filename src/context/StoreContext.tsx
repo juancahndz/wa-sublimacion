@@ -263,9 +263,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [settings]);
 
   // Cloud Firestore Sync Helpers
+  const cleanDataForCloud = <T,>(data: T): T => {
+    return JSON.parse(JSON.stringify(data));
+  };
+
   const syncProductsToCloud = async (items: Product[]) => {
     try {
-      await setDoc(doc(db, 'store_data', 'products'), { items });
+      await setDoc(doc(db, 'store_data', 'products'), { items: cleanDataForCloud(items) });
     } catch (err) {
       console.warn("Firestore products sync note:", err);
     }
@@ -273,7 +277,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const syncDesignsToCloud = async (items: DesignTemplate[]) => {
     try {
-      await setDoc(doc(db, 'store_data', 'designs'), { items });
+      await setDoc(doc(db, 'store_data', 'designs'), { items: cleanDataForCloud(items) });
     } catch (err) {
       console.warn("Firestore designs sync note:", err);
     }
@@ -281,7 +285,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const syncInventoryToCloud = async (items: InventoryItem[]) => {
     try {
-      await setDoc(doc(db, 'store_data', 'inventory'), { items });
+      await setDoc(doc(db, 'store_data', 'inventory'), { items: cleanDataForCloud(items) });
     } catch (err) {
       console.warn("Firestore inventory sync note:", err);
     }
@@ -289,7 +293,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const syncOrdersToCloud = async (items: Order[]) => {
     try {
-      await setDoc(doc(db, 'store_data', 'orders'), { items });
+      await setDoc(doc(db, 'store_data', 'orders'), { items: cleanDataForCloud(items) });
     } catch (err) {
       console.warn("Firestore orders sync note:", err);
     }
@@ -297,7 +301,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const syncSettingsToCloud = async (st: StoreSettings) => {
     try {
-      await setDoc(doc(db, 'store_data', 'settings'), { settings: st });
+      await setDoc(doc(db, 'store_data', 'settings'), { settings: cleanDataForCloud(st) });
     } catch (err) {
       console.warn("Firestore settings sync note:", err);
     }
