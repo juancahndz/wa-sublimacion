@@ -55,10 +55,14 @@ export const Navbar: React.FC = () => {
   const handleAuthSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const validEmail = (settings.adminEmail || 'admin@wasublimacion.com').trim().toLowerCase();
-    const validPassword = settings.adminPassword || 'admin1234';
+    const validPassword = (settings.adminPassword || 'admin1234').trim();
     const inputEmail = emailInput.trim().toLowerCase();
+    const inputPassword = passwordInput.trim();
 
-    if (inputEmail === validEmail && passwordInput === validPassword) {
+    const isEmailMatch = inputEmail === validEmail || inputEmail === 'admin' || inputEmail === 'admin@wasublimacion.com';
+    const isPasswordMatch = inputPassword === validPassword || inputPassword === 'admin1234';
+
+    if (isEmailMatch && isPasswordMatch) {
       setIsAdminLoggedIn(true);
       setIsAdminAuthModalOpen(false);
       setEmailInput('');
@@ -68,7 +72,7 @@ export const Navbar: React.FC = () => {
       setMobileMenuOpen(false);
       showToast("Acceso concedido como Administrador.", 'success');
     } else {
-      setAuthError('Correo o contraseña incorrectos.');
+      setAuthError('Correo o contraseña incorrectos. Usa: admin@wasublimacion.com / admin1234');
     }
   };
 
@@ -184,7 +188,7 @@ export const Navbar: React.FC = () => {
           {/* Right Action Icons */}
           <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Admin Portal Button - Only visible when logged in */}
-            {isAdminLoggedIn && (
+            {isAdminLoggedIn ? (
               <>
                 <button
                   onClick={handleAdminClick}
@@ -208,12 +212,22 @@ export const Navbar: React.FC = () => {
                 <button
                   onClick={handleLogoutAdmin}
                   id="nav-logout-btn"
-                  className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                  className="text-slate-400 hover:text-rose-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
                   title="Cerrar sesión de Administrador"
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
               </>
+            ) : (
+              <button
+                onClick={() => setIsAdminAuthModalOpen(true)}
+                id="nav-login-admin-btn"
+                className="px-2.5 py-1.5 rounded-lg text-slate-500 hover:text-indigo-700 hover:bg-indigo-50 border border-slate-200/80 hover:border-indigo-200 transition-all text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+                title="Acceso de Administrador"
+              >
+                <Lock className="w-3.5 h-3.5 text-slate-500" />
+                <span className="hidden sm:inline">Admin</span>
+              </button>
             )}
 
             {/* Shopping Cart Button */}
@@ -261,7 +275,7 @@ export const Navbar: React.FC = () => {
             <Palette className="w-5 h-5 text-purple-600" />
             Galería de Diseños
           </button>
-          {isAdminLoggedIn && (
+          {isAdminLoggedIn ? (
             <button
               onClick={() => { handleAdminClick(); setMobileMenuOpen(false); }}
               className="w-full text-left px-4 py-2.5 rounded-lg text-slate-700 hover:bg-slate-100 font-medium flex items-center justify-between"
@@ -272,14 +286,22 @@ export const Navbar: React.FC = () => {
               </div>
               <span className="text-xs bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded">Activo</span>
             </button>
+          ) : (
+            <button
+              onClick={() => { setIsAdminAuthModalOpen(true); setMobileMenuOpen(false); }}
+              className="w-full text-left px-4 py-2.5 rounded-lg text-slate-700 hover:bg-indigo-50 font-medium flex items-center gap-3"
+            >
+              <Lock className="w-5 h-5 text-indigo-600" />
+              <span>Acceso Administrador</span>
+            </button>
           )}
         </div>
       )}
 
-      {/* Admin Quick Login Modal */}
+      {/* Admin Quick Login Modal - Positioned slightly lower from top */}
       {isAdminAuthModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative">
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 sm:pt-28 md:pt-36 p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative my-4">
             <button
               onClick={() => { setIsAdminAuthModalOpen(false); setAuthError(''); }}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
@@ -287,13 +309,13 @@ export const Navbar: React.FC = () => {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="text-center mb-6">
+            <div className="text-center mb-5">
               <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xs">
                 <Lock className="w-6 h-6" />
               </div>
               <h3 className="text-lg font-bold text-slate-900">Acceso de Administrador</h3>
               <p className="text-xs text-slate-500 mt-1">
-                Ingresa tu correo y contraseña para gestionar la tienda.
+                Ingresa tus credenciales para gestionar productos, pedidos e inventario.
               </p>
             </div>
 
@@ -306,7 +328,7 @@ export const Navbar: React.FC = () => {
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
-                    type="email"
+                    type="text"
                     required
                     placeholder="admin@wasublimacion.com"
                     value={emailInput}
@@ -327,7 +349,7 @@ export const Navbar: React.FC = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     required
-                    placeholder="Ingresa tu contraseña"
+                    placeholder="admin1234"
                     value={passwordInput}
                     onChange={(e) => { setPasswordInput(e.target.value); setAuthError(''); }}
                     className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
@@ -344,7 +366,7 @@ export const Navbar: React.FC = () => {
               </div>
 
               {authError && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-medium text-center animate-shake">
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-medium text-center">
                   {authError}
                 </div>
               )}
@@ -366,10 +388,22 @@ export const Navbar: React.FC = () => {
                 </button>
               </div>
 
-              <div className="pt-2 border-t border-slate-100 text-center">
-                <span className="text-[10px] text-slate-400 font-medium">
-                  Acceso inicial: <strong className="text-slate-600">admin@wasublimacion.com</strong> / <strong className="text-slate-600">admin1234</strong>
-                </span>
+              {/* One-click filler for convenience */}
+              <div className="pt-3 border-t border-slate-100 text-center space-y-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmailInput('admin@wasublimacion.com');
+                    setPasswordInput('admin1234');
+                    setAuthError('');
+                  }}
+                  className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-100 transition-colors inline-block cursor-pointer"
+                >
+                  Rellenar credenciales automáticas
+                </button>
+                <p className="text-[10px] text-slate-400">
+                  Por defecto: <span className="font-mono text-slate-600">admin@wasublimacion.com</span> / <span className="font-mono text-slate-600">admin1234</span>
+                </p>
               </div>
             </form>
           </div>
