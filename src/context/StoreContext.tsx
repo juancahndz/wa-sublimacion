@@ -9,7 +9,8 @@ import {
   ActiveView, 
   OrderStatus, 
   PaymentStatus, 
-  CustomDesignData 
+  CustomDesignData,
+  CategoryOption
 } from '../types';
 import { 
   INITIAL_PRODUCTS, 
@@ -18,6 +19,8 @@ import {
   INITIAL_ORDERS, 
   INITIAL_STORE_SETTINGS 
 } from '../data/initialData';
+import { doc, onSnapshot, setDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import confetti from 'canvas-confetti';
 
 interface Toast {
@@ -259,6 +262,98 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [settings]);
 
+  // Cloud Firestore Sync Helpers
+  const syncProductsToCloud = async (items: Product[]) => {
+    try {
+      await setDoc(doc(db, 'store_data', 'products'), { items });
+    } catch (err) {
+      console.warn("Firestore products sync note:", err);
+    }
+  };
+
+  const syncDesignsToCloud = async (items: DesignTemplate[]) => {
+    try {
+      await setDoc(doc(db, 'store_data', 'designs'), { items });
+    } catch (err) {
+      console.warn("Firestore designs sync note:", err);
+    }
+  };
+
+  const syncInventoryToCloud = async (items: InventoryItem[]) => {
+    try {
+      await setDoc(doc(db, 'store_data', 'inventory'), { items });
+    } catch (err) {
+      console.warn("Firestore inventory sync note:", err);
+    }
+  };
+
+  const syncOrdersToCloud = async (items: Order[]) => {
+    try {
+      await setDoc(doc(db, 'store_data', 'orders'), { items });
+    } catch (err) {
+      console.warn("Firestore orders sync note:", err);
+    }
+  };
+
+  const syncSettingsToCloud = async (st: StoreSettings) => {
+    try {
+      await setDoc(doc(db, 'store_data', 'settings'), { settings: st });
+    } catch (err) {
+      console.warn("Firestore settings sync note:", err);
+    }
+  };
+
+  // Real-time Firestore synchronization across all devices
+  useEffect(() => {
+    const unsubProducts = onSnapshot(doc(db, 'store_data', 'products'), (docSnap) => {
+      if (docSnap.exists() && docSnap.data()?.items) {
+        setProducts(docSnap.data().items);
+      } else {
+        setDoc(doc(db, 'store_data', 'products'), { items: INITIAL_PRODUCTS }).catch(() => {});
+      }
+    }, (err) => console.warn("Firestore products listener note:", err));
+
+    const unsubDesigns = onSnapshot(doc(db, 'store_data', 'designs'), (docSnap) => {
+      if (docSnap.exists() && docSnap.data()?.items) {
+        setDesignTemplates(docSnap.data().items);
+      } else {
+        setDoc(doc(db, 'store_data', 'designs'), { items: INITIAL_DESIGN_TEMPLATES }).catch(() => {});
+      }
+    }, (err) => console.warn("Firestore designs listener note:", err));
+
+    const unsubInventory = onSnapshot(doc(db, 'store_data', 'inventory'), (docSnap) => {
+      if (docSnap.exists() && docSnap.data()?.items) {
+        setInventory(docSnap.data().items);
+      } else {
+        setDoc(doc(db, 'store_data', 'inventory'), { items: INITIAL_INVENTORY }).catch(() => {});
+      }
+    }, (err) => console.warn("Firestore inventory listener note:", err));
+
+    const unsubOrders = onSnapshot(doc(db, 'store_data', 'orders'), (docSnap) => {
+      if (docSnap.exists() && docSnap.data()?.items) {
+        setOrders(docSnap.data().items);
+      } else {
+        setDoc(doc(db, 'store_data', 'orders'), { items: INITIAL_ORDERS }).catch(() => {});
+      }
+    }, (err) => console.warn("Firestore orders listener note:", err));
+
+    const unsubSettings = onSnapshot(doc(db, 'store_data', 'settings'), (docSnap) => {
+      if (docSnap.exists() && docSnap.data()?.settings) {
+        setSettings(docSnap.data().settings);
+      } else {
+        setDoc(doc(db, 'store_data', 'settings'), { settings: INITIAL_STORE_SETTINGS }).catch(() => {});
+      }
+    }, (err) => console.warn("Firestore settings listener note:", err));
+
+    return () => {
+      unsubProducts();
+      unsubDesigns();
+      unsubInventory();
+      unsubOrders();
+      unsubSettings();
+    };
+  }, []);
+
   // Toast Helpers
   const showToast = (message: string, type: 'success' | 'info' | 'warning' | 'error' = 'success') => {
     const id = Math.random().toString(36).substring(2, 9);
@@ -333,7 +428,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Products CRUD with Instant Sublimation Line Synchronization
   const addProduct = (product: Product) => {
-    setProducts(prev => [product, ...prev]);
+    const newProducts = [product, ...products];
+    setProducts(newProducts);
+    syncProductsToCloud(newProducts);
 
     // Automatically ensure the sublimation line appears in settings.customCategories
     setSettings(prev => {
@@ -344,10 +441,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           id: product.category,
           label: formatCategoryLabel(product.category)
         };
-        return {
-          ...prev,
-          customCategories: [...currentCats, newCat]
-        };
+        const updatedCats = [...currentCats, newCat];
+        const updatedSettings = { ...prev, customCategories: updatedCats };
+        syncSettingsToCloud(updatedSettings);
+        return updatedSettings;
       }
       return prev;
     });
@@ -359,6 +456,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const oldProduct = products.find(p => p.id === updatedProduct.id);
     const updatedProducts = products.map(p => p.id === updatedProduct.id ? updatedProduct : p);
     setProducts(updatedProducts);
+    syncProductsToCloud(updatedProducts);
 
     if (oldProduct && oldProduct.category !== updatedProduct.category) {
       const oldCatStillHasProducts = updatedProducts.some(p => p.category === oldProduct.category);
@@ -374,10 +472,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             label: formatCategoryLabel(updatedProduct.category)
           }];
         }
-        return {
-          ...prev,
-          customCategories: currentCats
-        };
+        const updatedSettings = { ...prev, customCategories: currentCats };
+        syncSettingsToCloud(updatedSettings);
+        return updatedSettings;
       });
     }
 
@@ -388,6 +485,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const productToDelete = products.find(p => p.id === id);
     const updatedProducts = products.filter(p => p.id !== id);
     setProducts(updatedProducts);
+    syncProductsToCloud(updatedProducts);
 
     // If no remaining products use this category, automatically remove it from customCategories!
     if (productToDelete) {
@@ -396,10 +494,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSettings(prev => {
           const currentCats = prev.customCategories || [];
           const filtered = currentCats.filter(c => c.id === 'all' || c.id !== productToDelete.category);
-          return {
-            ...prev,
-            customCategories: filtered
-          };
+          const updatedSettings = { ...prev, customCategories: filtered };
+          syncSettingsToCloud(updatedSettings);
+          return updatedSettings;
         });
       }
     }
@@ -408,38 +505,50 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const addDesignTemplate = (template: DesignTemplate) => {
-    setDesignTemplates(prev => [template, ...prev]);
+    const newDesigns = [template, ...designTemplates];
+    setDesignTemplates(newDesigns);
+    syncDesignsToCloud(newDesigns);
     showToast(`Diseño "${template.title}" publicado en la galería.`, 'success');
   };
 
   const updateDesignTemplate = (template: DesignTemplate) => {
-    setDesignTemplates(prev => prev.map(t => t.id === template.id ? template : t));
+    const newDesigns = designTemplates.map(t => t.id === template.id ? template : t);
+    setDesignTemplates(newDesigns);
+    syncDesignsToCloud(newDesigns);
     showToast(`Diseño "${template.title}" actualizado.`, 'info');
   };
 
   const deleteDesignTemplate = (id: string) => {
-    setDesignTemplates(prev => prev.filter(d => d.id !== id));
+    const newDesigns = designTemplates.filter(d => d.id !== id);
+    setDesignTemplates(newDesigns);
+    syncDesignsToCloud(newDesigns);
     showToast("Diseño retirado de la galería.", 'info');
   };
 
   // Inventory Management
   const addInventoryItem = (item: InventoryItem) => {
-    setInventory(prev => [item, ...prev]);
+    const newInv = [item, ...inventory];
+    setInventory(newInv);
+    syncInventoryToCloud(newInv);
     showToast(`Insumo "${item.name}" registrado en el inventario.`, 'success');
   };
 
   const updateInventoryItem = (item: InventoryItem) => {
-    setInventory(prev => prev.map(i => i.id === item.id ? item : i));
+    const newInv = inventory.map(i => i.id === item.id ? item : i);
+    setInventory(newInv);
+    syncInventoryToCloud(newInv);
     showToast(`Insumo "${item.name}" actualizado.`, 'info');
   };
 
   const deleteInventoryItem = (id: string) => {
-    setInventory(prev => prev.filter(i => i.id !== id));
+    const newInv = inventory.filter(i => i.id !== id);
+    setInventory(newInv);
+    syncInventoryToCloud(newInv);
     showToast("Insumo eliminado del inventario.", 'warning');
   };
 
   const adjustStock = (id: string, delta: number, note?: string) => {
-    setInventory(prev => prev.map(item => {
+    const newInv = inventory.map(item => {
       if (item.id === id) {
         const newStock = Math.max(0, item.currentStock + delta);
         return {
@@ -450,7 +559,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         };
       }
       return item;
-    }));
+    });
+    setInventory(newInv);
+    syncInventoryToCloud(newInv);
     showToast(`Stock actualizado (${delta > 0 ? '+' : ''}${delta} unidades).`, 'info');
   };
 
@@ -552,13 +663,33 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     // Auto reduce inventory for linked blank items
+    let updatedInventory = inventory;
+    let inventoryModified = false;
     orderData.items.forEach(cartItem => {
       if (cartItem.product.linkedInventoryId) {
-        adjustStock(cartItem.product.linkedInventoryId, -cartItem.quantity, `Deducción por pedido ${trackingCode}`);
+        inventoryModified = true;
+        updatedInventory = updatedInventory.map(item => {
+          if (item.id === cartItem.product.linkedInventoryId) {
+            return {
+              ...item,
+              currentStock: Math.max(0, item.currentStock - cartItem.quantity),
+              lastUpdated: new Date().toISOString().split('T')[0],
+              notes: `Deducción por pedido ${trackingCode}`
+            };
+          }
+          return item;
+        });
       }
     });
 
-    setOrders(prev => [newOrder, ...prev]);
+    if (inventoryModified) {
+      setInventory(updatedInventory);
+      syncInventoryToCloud(updatedInventory);
+    }
+
+    const newOrders = [newOrder, ...orders];
+    setOrders(newOrders);
+    syncOrdersToCloud(newOrders);
     clearCart();
 
     // Trigger celebration confetti
@@ -602,7 +733,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       cancelado: 'El pedido fue cancelado y los insumos reincorporados.'
     };
 
-    setOrders(prev => prev.map(order => {
+    const newOrders = orders.map(order => {
       if (order.id === orderId) {
         const newEvent = {
           status: newStatus,
@@ -620,13 +751,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         };
       }
       return order;
-    }));
+    });
 
+    setOrders(newOrders);
+    syncOrdersToCloud(newOrders);
     showToast(`Estado del pedido actualizado a "${statusTitles[newStatus]}".`, 'success');
   };
 
   const updateOrderPaymentStatus = (orderId: string, status: PaymentStatus, proofUrl?: string) => {
-    setOrders(prev => prev.map(ord => {
+    const newOrders = orders.map(ord => {
       if (ord.id === orderId) {
         return {
           ...ord,
@@ -635,12 +768,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         };
       }
       return ord;
-    }));
+    });
+    setOrders(newOrders);
+    syncOrdersToCloud(newOrders);
     showToast(`Estado de pago actualizado: ${status}.`, 'info');
   };
 
   const updateOrderDetails = (orderId: string, data: Partial<Order>) => {
-    setOrders(prev => prev.map(ord => ord.id === orderId ? { ...ord, ...data } : ord));
+    const newOrders = orders.map(ord => ord.id === orderId ? { ...ord, ...data } : ord);
+    setOrders(newOrders);
+    syncOrdersToCloud(newOrders);
     showToast("Detalles del pedido actualizados.", 'info');
   };
 
@@ -667,7 +804,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   const updateSettings = (newSettings: Partial<StoreSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+    const updatedSettings = { ...settings, ...newSettings };
+    setSettings(updatedSettings);
+    syncSettingsToCloud(updatedSettings);
     showToast("Ajustes de la tienda guardados.", 'success');
   };
 
@@ -678,6 +817,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setOrders(INITIAL_ORDERS);
     setSettings(INITIAL_STORE_SETTINGS);
     setCart([]);
+    syncProductsToCloud(INITIAL_PRODUCTS);
+    syncDesignsToCloud(INITIAL_DESIGN_TEMPLATES);
+    syncInventoryToCloud(INITIAL_INVENTORY);
+    syncOrdersToCloud(INITIAL_ORDERS);
+    syncSettingsToCloud(INITIAL_STORE_SETTINGS);
     showToast("Datos de demostración restablecidos a valores originales.", 'info');
   };
 
