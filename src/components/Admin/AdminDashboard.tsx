@@ -33,6 +33,7 @@ export const AdminDashboard: React.FC = () => {
   const activeInProduction = orders.filter(o => ['recibido', 'arte_aprobacion', 'sublimando', 'control_calidad'].includes(o.status)).length;
   const criticalStockCount = inventory.filter(i => i.currentStock <= i.minStockAlert).length;
   const deliveredCount = orders.filter(o => o.status === 'entregado').length;
+  const totalStockPieces = inventory.reduce((acc, curr) => acc + (curr.currentStock || 0), 0);
 
   return (
     <div className="min-h-screen bg-slate-50">
