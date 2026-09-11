@@ -193,6 +193,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (parsed.bannerAnnouncement && parsed.bannerAnnouncement.includes("Envíos gratis en pedidos superiores")) {
           parsed.bannerAnnouncement = "";
         }
+        if (!parsed.adminEmail) {
+          parsed.adminEmail = "admin@wasublimacion.com";
+        }
+        if (!parsed.adminPassword) {
+          parsed.adminPassword = "admin1234";
+        }
         return parsed;
       }
       return INITIAL_STORE_SETTINGS;

@@ -38,7 +38,9 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
   bannerAnnouncement: "",
   freeShippingThreshold: 50,
   standardShippingCost: 4.5,
-  adminPin: "1234"
+  adminPin: "1234",
+  adminEmail: "admin@wasublimacion.com",
+  adminPassword: "admin1234"
 };
 
 export const INITIAL_PRODUCTS: Product[] = [

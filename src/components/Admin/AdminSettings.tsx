@@ -78,37 +78,37 @@ export const AdminSettings: React.FC = () => {
       
       <form onSubmit={handleSave} className="space-y-6">
         
-        {/* Top Banner Announcement & Security PIN */}
+        {/* Admin Credentials & Security */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-            <Sparkles className="w-4 h-4 text-indigo-600" />
-            <h3 className="text-sm font-bold text-slate-900">Barra de Anuncios Superior & Seguridad</h3>
+            <Lock className="w-4 h-4 text-indigo-600" />
+            <h3 className="text-sm font-bold text-slate-900">Credenciales de Acceso Administrador</h3>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="font-bold text-slate-700 block mb-1">Texto del Anuncio Superior (Barra Negra)</label>
+              <label className="font-bold text-slate-700 block mb-1">Correo Electrónico del Administrador</label>
               <input
-                type="text"
-                value={form.bannerAnnouncement || ''}
-                onChange={e => setForm({ ...form, bannerAnnouncement: e.target.value })}
-                placeholder="Ej: ✨ ¡Envíos gratis en pedidos superiores a $50! Estampados indelebles."
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+                type="email"
+                required
+                value={form.adminEmail || 'admin@wasublimacion.com'}
+                onChange={e => setForm({ ...form, adminEmail: e.target.value })}
+                placeholder="admin@wasublimacion.com"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl font-medium text-slate-800"
               />
             </div>
 
             <div>
-              <label className="font-bold text-slate-700 block mb-1">PIN de Acceso Administrador (4 dígitos)</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="password"
-                  maxLength={6}
-                  value={form.adminPin || '1234'}
-                  onChange={e => setForm({ ...form, adminPin: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono text-base tracking-widest"
-                />
-                <span className="text-[10px] text-slate-500 shrink-0 font-medium">Por defecto: 1234</span>
-              </div>
+              <label className="font-bold text-slate-700 block mb-1">Contraseña de Administrador</label>
+              <input
+                type="text"
+                required
+                value={form.adminPassword || 'admin1234'}
+                onChange={e => setForm({ ...form, adminPassword: e.target.value })}
+                placeholder="admin1234"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono text-sm font-bold text-slate-800"
+              />
+              <span className="text-[10px] text-slate-500 font-medium mt-1 block">Por defecto: admin1234</span>
             </div>
           </div>
         </div>

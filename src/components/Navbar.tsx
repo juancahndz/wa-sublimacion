@@ -14,7 +14,11 @@ import {
   Layers, 
   LogOut,
   Layers3,
-  Edit3
+  Edit3,
+  Mail,
+  Eye,
+  EyeOff,
+  KeyRound
 } from 'lucide-react';
 
 export const Navbar: React.FC = () => {
@@ -34,7 +38,9 @@ export const Navbar: React.FC = () => {
   } = useStore();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [pinInput, setPinInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
 
   const handleAdminClick = () => {
@@ -46,18 +52,23 @@ export const Navbar: React.FC = () => {
     }
   };
 
-  const handlePinSubmit = (e: React.FormEvent) => {
+  const handleAuthSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pinInput === settings.adminPin || pinInput === '1234') {
+    const validEmail = (settings.adminEmail || 'admin@wasublimacion.com').trim().toLowerCase();
+    const validPassword = settings.adminPassword || 'admin1234';
+    const inputEmail = emailInput.trim().toLowerCase();
+
+    if (inputEmail === validEmail && passwordInput === validPassword) {
       setIsAdminLoggedIn(true);
       setIsAdminAuthModalOpen(false);
-      setPinInput('');
+      setEmailInput('');
+      setPasswordInput('');
       setAuthError('');
       setActiveView('admin');
       setMobileMenuOpen(false);
       showToast("Acceso concedido como Administrador.", 'success');
     } else {
-      setAuthError('PIN incorrecto. El PIN por defecto es 1234.');
+      setAuthError('Correo o contraseña incorrectos.');
     }
   };
 
@@ -265,62 +276,100 @@ export const Navbar: React.FC = () => {
         </div>
       )}
 
-      {/* Admin Quick PIN Modal */}
+      {/* Admin Quick Login Modal */}
       {isAdminAuthModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 relative">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative">
             <button
               onClick={() => { setIsAdminAuthModalOpen(false); setAuthError(''); }}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div className="text-center mb-5">
-              <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mx-auto mb-3">
+            <div className="text-center mb-6">
+              <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xs">
                 <Lock className="w-6 h-6" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Acceso Administrador</h3>
+              <h3 className="text-lg font-bold text-slate-900">Acceso de Administrador</h3>
               <p className="text-xs text-slate-500 mt-1">
-                Ingresa el PIN de seguridad para gestionar productos, pedidos e inventario.
+                Ingresa tu correo y contraseña para gestionar la tienda.
               </p>
-              <div className="mt-2 inline-block bg-slate-100 text-slate-600 text-[11px] px-2.5 py-1 rounded-md font-mono">
-                PIN de demostración: <strong>1234</strong>
-              </div>
             </div>
 
-            <form onSubmit={handlePinSubmit} className="space-y-4">
+            <form onSubmit={handleAuthSubmit} className="space-y-4">
+              {/* Email input */}
               <div>
-                <input
-                  type="password"
-                  maxLength={6}
-                  placeholder="PIN de 4 dígitos"
-                  value={pinInput}
-                  onChange={(e) => { setPinInput(e.target.value); setAuthError(''); }}
-                  className="w-full text-center tracking-widest text-2xl font-mono px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                  autoFocus
-                />
-                {authError && (
-                  <p className="text-xs text-rose-500 font-medium text-center mt-1.5">
-                    {authError}
-                  </p>
-                )}
+                <label className="text-xs font-bold text-slate-700 block mb-1">
+                  Correo Electrónico
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="admin@wasublimacion.com"
+                    value={emailInput}
+                    onChange={(e) => { setEmailInput(e.target.value); setAuthError(''); }}
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                    autoFocus
+                  />
+                </div>
               </div>
 
-              <div className="flex gap-2">
+              {/* Password input with toggle */}
+              <div>
+                <label className="text-xs font-bold text-slate-700 block mb-1">
+                  Contraseña
+                </label>
+                <div className="relative">
+                  <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    placeholder="Ingresa tu contraseña"
+                    value={passwordInput}
+                    onChange={(e) => { setPasswordInput(e.target.value); setAuthError(''); }}
+                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded cursor-pointer"
+                    title={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {authError && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-medium text-center animate-shake">
+                  {authError}
+                </div>
+              )}
+
+              <div className="pt-2 flex gap-2.5">
                 <button
                   type="button"
                   onClick={() => { setIsAdminAuthModalOpen(false); setAuthError(''); }}
-                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-sm font-semibold text-white shadow-md"
+                  className="w-1/2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
-                  Entrar
+                  <Lock className="w-3.5 h-3.5" />
+                  <span>Ingresar</span>
                 </button>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 text-center">
+                <span className="text-[10px] text-slate-400 font-medium">
+                  Acceso inicial: <strong className="text-slate-600">admin@wasublimacion.com</strong> / <strong className="text-slate-600">admin1234</strong>
+                </span>
               </div>
             </form>
           </div>

@@ -186,7 +186,9 @@ export interface StoreSettings {
   bannerAnnouncement: string;
   freeShippingThreshold: number;
   standardShippingCost: number;
-  adminPin: string;
+  adminPin?: string;
+  adminEmail?: string;
+  adminPassword?: string;
 }
 
 export type ActiveView = 
