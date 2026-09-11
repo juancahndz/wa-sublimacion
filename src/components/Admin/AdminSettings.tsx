@@ -75,7 +75,7 @@ export const AdminSettings: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="w-full space-y-6">
       
       <form onSubmit={handleSave} className="space-y-6">
         
