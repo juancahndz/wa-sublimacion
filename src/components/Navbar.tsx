@@ -90,7 +90,8 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+    <>
+      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
       {/* Top Announcement Bar */}
       {settings.bannerAnnouncement && (
         <div className="bg-slate-900 text-white text-xs font-semibold py-1.5 px-4 text-center tracking-wide flex items-center justify-center gap-2 border-b border-slate-800">
@@ -297,118 +298,119 @@ export const Navbar: React.FC = () => {
           )}
         </div>
       )}
+    </header>
 
-      {/* Admin Quick Login Modal - Positioned slightly lower from top */}
-      {isAdminAuthModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 sm:pt-28 md:pt-36 p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative my-4">
-            <button
-              onClick={() => { setIsAdminAuthModalOpen(false); setAuthError(''); }}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+    {/* Admin Quick Login Modal - Perfectly centered on screen, never cut off */}
+    {isAdminAuthModalOpen && (
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm overflow-y-auto">
+        <div className="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative my-auto max-h-[90vh] overflow-y-auto">
+          <button
+            onClick={() => { setIsAdminAuthModalOpen(false); setAuthError(''); }}
+            className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
-            <div className="text-center mb-5">
-              <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xs">
-                <Lock className="w-6 h-6" />
+          <div className="text-center mb-5">
+            <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-xs">
+              <Lock className="w-6 h-6" />
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Acceso de Administrador</h3>
+            <p className="text-xs text-slate-500 mt-1">
+              Ingresa tus credenciales para gestionar productos, pedidos e inventario.
+            </p>
+          </div>
+
+          <form onSubmit={handleAuthSubmit} className="space-y-4">
+            {/* Email input */}
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                Correo Electrónico
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  required
+                  placeholder="admin@wasublimacion.com"
+                  value={emailInput}
+                  onChange={(e) => { setEmailInput(e.target.value); setAuthError(''); }}
+                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                  autoFocus
+                />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Acceso de Administrador</h3>
-              <p className="text-xs text-slate-500 mt-1">
-                Ingresa tus credenciales para gestionar productos, pedidos e inventario.
-              </p>
             </div>
 
-            <form onSubmit={handleAuthSubmit} className="space-y-4">
-              {/* Email input */}
-              <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">
-                  Correo Electrónico
-                </label>
-                <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input
-                    type="text"
-                    required
-                    placeholder="admin@wasublimacion.com"
-                    value={emailInput}
-                    onChange={(e) => { setEmailInput(e.target.value); setAuthError(''); }}
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                    autoFocus
-                  />
-                </div>
-              </div>
-
-              {/* Password input with toggle */}
-              <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">
-                  Contraseña
-                </label>
-                <div className="relative">
-                  <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    required
-                    placeholder="admin1234"
-                    value={passwordInput}
-                    onChange={(e) => { setPasswordInput(e.target.value); setAuthError(''); }}
-                    className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded cursor-pointer"
-                    title={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-              </div>
-
-              {authError && (
-                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-medium text-center">
-                  {authError}
-                </div>
-              )}
-
-              <div className="pt-2 flex gap-2.5">
+            {/* Password input with toggle */}
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                Contraseña
+              </label>
+              <div className="relative">
+                <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  placeholder="admin1234"
+                  value={passwordInput}
+                  onChange={(e) => { setPasswordInput(e.target.value); setAuthError(''); }}
+                  className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
+                />
                 <button
                   type="button"
-                  onClick={() => { setIsAdminAuthModalOpen(false); setAuthError(''); }}
-                  className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-0.5 rounded cursor-pointer"
+                  title={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
                 >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="w-1/2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
-                >
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>Ingresar</span>
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+            </div>
 
-              {/* One-click filler for convenience */}
-              <div className="pt-3 border-t border-slate-100 text-center space-y-1.5">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEmailInput('admin@wasublimacion.com');
-                    setPasswordInput('admin1234');
-                    setAuthError('');
-                  }}
-                  className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-100 transition-colors inline-block cursor-pointer"
-                >
-                  Rellenar credenciales automáticas
-                </button>
-                <p className="text-[10px] text-slate-400">
-                  Por defecto: <span className="font-mono text-slate-600">admin@wasublimacion.com</span> / <span className="font-mono text-slate-600">admin1234</span>
-                </p>
+            {authError && (
+              <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-xs font-medium text-center">
+                {authError}
               </div>
-            </form>
-          </div>
+            )}
+
+            <div className="pt-2 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => { setIsAdminAuthModalOpen(false); setAuthError(''); }}
+                className="w-1/2 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="w-1/2 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Lock className="w-3.5 h-3.5" />
+                <span>Ingresar</span>
+              </button>
+            </div>
+
+            {/* One-click filler for convenience */}
+            <div className="pt-3 border-t border-slate-100 text-center space-y-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setEmailInput('admin@wasublimacion.com');
+                  setPasswordInput('admin1234');
+                  setAuthError('');
+                }}
+                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-100 transition-colors inline-block cursor-pointer"
+              >
+                Rellenar credenciales automáticas
+              </button>
+              <p className="text-[10px] text-slate-400">
+                Por defecto: <span className="font-mono text-slate-600">admin@wasublimacion.com</span> / <span className="font-mono text-slate-600">admin1234</span>
+              </p>
+            </div>
+          </form>
         </div>
-      )}
-    </header>
+      </div>
+    )}
+  </>
   );
 };
