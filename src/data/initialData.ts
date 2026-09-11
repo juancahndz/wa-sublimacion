@@ -9,7 +9,7 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
   heroBadgeTitle: "Sublimación Térmica",
   heroBadgeSubtitle: "200°C / Presión Uniforme",
   currency: "$",
-  whatsappNumber: "+504 3250-4860",
+  whatsappNumber: "+504 3250-4890",
   contactEmail: "contacto@wasublimacion.com",
   address: "Comayagua, Honduras",
   catalogTitle: "Catálogo de Productos en Existencia",
@@ -32,7 +32,7 @@ export const INITIAL_STORE_SETTINGS: StoreSettings = {
   },
   digitalPaymentDetails: {
     type: "Zelle / SINPE Móvil / Mercado Pago / Bizum",
-    identifier: "pagos@wasublimacion.com / +504 3250-4860",
+    identifier: "pagos@wasublimacion.com / +504 3250-4890",
     instructions: "Envía el comprobante con tu número de pedido de referencia para procesar de inmediato."
   },
   bannerAnnouncement: "",

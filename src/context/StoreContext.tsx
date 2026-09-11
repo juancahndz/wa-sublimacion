@@ -199,8 +199,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         if (!parsed.adminPassword) {
           parsed.adminPassword = "admin1234";
         }
-        if (!parsed.whatsappNumber || parsed.whatsappNumber.includes("+52 55 8765 4321")) {
-          parsed.whatsappNumber = "+504 3250-4860";
+        if (!parsed.whatsappNumber || parsed.whatsappNumber.includes("+52 55 8765 4321") || parsed.whatsappNumber === "+504 3250-4860") {
+          parsed.whatsappNumber = "+504 3250-4890";
         }
         return parsed;
       }
