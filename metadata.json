@@ -1,0 +1,6 @@
+{
+  "name": "WA Sublimacion - Sublimación y Pedidos Personalizados",
+  "description": "Plataforma integral de sublimación con catálogo de diseños, personalizador interactivo de productos, seguimiento de pedidos en tiempo real y panel de administración con control de inventarios.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
