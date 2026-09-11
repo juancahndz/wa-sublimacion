@@ -20,6 +20,7 @@ import {
   Trash2,
   SlidersHorizontal
 } from 'lucide-react';
+import { compressImageFile } from '../../utils/imageCompressor';
 
 export const AdminSettings: React.FC = () => {
   const { settings, updateSettings, resetToInitialData, showToast } = useStore();
@@ -183,16 +184,16 @@ export const AdminSettings: React.FC = () => {
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (ev) => {
-                              const result = ev.target?.result as string;
+                            try {
+                              const result = await compressImageFile(file, 600, 0.8);
                               setForm(prev => ({ ...prev, logoUrl: result }));
-                              showToast("Logo cargado. Recuerda presionar 'Guardar Configuración'.", "success");
-                            };
-                            reader.readAsDataURL(file);
+                              showToast("Logo optimizado y cargado. Recuerda presionar 'Guardar Configuración'.", "success");
+                            } catch (err) {
+                              console.error(err);
+                            }
                           }
                         }}
                       />
@@ -334,16 +335,16 @@ export const AdminSettings: React.FC = () => {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onload = (ev) => {
-                            const result = ev.target?.result as string;
+                          try {
+                            const result = await compressImageFile(file, 1200, 0.8);
                             setForm(prev => ({ ...prev, heroImageUrl: result }));
-                            showToast("Imagen de portada cargada.", "success");
-                          };
-                          reader.readAsDataURL(file);
+                            showToast("Imagen de portada optimizada y cargada.", "success");
+                          } catch (err) {
+                            console.error(err);
+                          }
                         }
                       }}
                     />

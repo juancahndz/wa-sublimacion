@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { CategoryOption } from '../../types';
 import { X, Plus, Trash2, RotateCcw, Check, Sparkles, SlidersHorizontal, Upload, Image as ImageIcon } from 'lucide-react';
+import { compressImageFile } from '../../utils/imageCompressor';
 
 interface EditCatalogSectionModalProps {
   isOpen: boolean;
@@ -193,16 +194,16 @@ export const EditCatalogSectionModal: React.FC<EditCatalogSectionModalProps> = (
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (file) {
-                            const reader = new FileReader();
-                            reader.onload = (ev) => {
-                              const result = ev.target?.result as string;
+                            try {
+                              const result = await compressImageFile(file, 1200, 0.8);
                               setHeroImageUrl(result);
-                              showToast("Imagen de portada cargada con éxito.", "success");
-                            };
-                            reader.readAsDataURL(file);
+                              showToast("Imagen de portada optimizada y cargada.", "success");
+                            } catch (err) {
+                              console.error(err);
+                            }
                           }
                         }}
                       />

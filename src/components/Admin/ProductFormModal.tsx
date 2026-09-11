@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Product, ProductCategory, ProductMockupType, ProductVariant } from '../../types';
 import { useStore } from '../../context/StoreContext';
 import { X, Plus, Trash2, Upload, Sparkles, Layers, Image as ImageIcon } from 'lucide-react';
+import { compressImageFile } from '../../utils/imageCompressor';
 
 interface ProductFormModalProps {
   productToEdit?: Product | null;
@@ -127,13 +128,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
     const files = e.target.files;
     if (files && files.length > 0) {
       const fileArray = Array.from(files);
-      const readPromises = fileArray.map(file => {
-        return new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onload = (ev) => resolve(ev.target?.result as string);
-          reader.readAsDataURL(file);
-        });
-      });
+      const readPromises = fileArray.map(file => compressImageFile(file, 1000, 0.75));
 
       Promise.all(readPromises).then(newUrls => {
         setFormData(prev => {
@@ -145,7 +140,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
             images: [...newUrls, ...base]
           };
         });
-        showToast(`${newUrls.length} imagen(es) cargada(s).`, "success");
+        showToast(`${newUrls.length} imagen(es) optimizada(s) y cargada(s).`, "success");
       });
       e.target.value = '';
     }
