@@ -155,6 +155,14 @@ export interface CategoryOption {
   label: string;
 }
 
+export interface HeroFeatureButton {
+  id: string;
+  label: string;
+  description?: string;
+  icon?: string; // 'check', 'flame', 'shield', 'truck', 'sparkles', 'clock', 'star', 'heart', 'tag', 'gift'
+  actionType?: 'info' | 'catalog' | 'customizer' | 'designs' | 'whatsapp';
+}
+
 export interface StoreSettings {
   storeName: string;
   slogan: string;
@@ -168,6 +176,7 @@ export interface StoreSettings {
   heroTrustPoint1?: string;
   heroTrustPoint2?: string;
   heroTrustPoint3?: string;
+  heroFeatureButtons?: HeroFeatureButton[];
   heroImageUrl?: string;
   heroBadgeTag?: string;
   heroBadgeTitle?: string;

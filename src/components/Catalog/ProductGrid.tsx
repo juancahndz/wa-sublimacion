@@ -4,7 +4,7 @@ import { ProductCard } from './ProductCard';
 import { ProductDetailModal } from './ProductDetailModal';
 import { ProductFormModal } from '../Admin/ProductFormModal';
 import { EditCatalogSectionModal } from '../Admin/EditCatalogSectionModal';
-import { Product, ProductCategory } from '../../types';
+import { Product, ProductCategory, HeroFeatureButton } from '../../types';
 import { 
   Search, 
   Sparkles, 
@@ -25,7 +25,15 @@ import {
   Edit3,
   Trash2,
   Eye,
-  EyeOff
+  EyeOff,
+  Clock,
+  Heart,
+  Star,
+  Gift,
+  Tag,
+  Truck,
+  Info,
+  X
 } from 'lucide-react';
 
 export const ProductGrid: React.FC = () => {
@@ -46,6 +54,7 @@ export const ProductGrid: React.FC = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isEditSectionModalOpen, setIsEditSectionModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [activeFeatureInfo, setActiveFeatureInfo] = useState<HeroFeatureButton | null>(null);
 
   const handleOpenAddProduct = () => {
     setEditingProduct(null);
@@ -91,6 +100,76 @@ export const ProductGrid: React.FC = () => {
       });
   }, [products, selectedCategory, searchQuery, sortBy]);
 
+  const featureButtons = useMemo(() => {
+    if (settings.heroFeatureButtons !== undefined) {
+      return settings.heroFeatureButtons;
+    }
+    const defaults: HeroFeatureButton[] = [];
+    if (settings.heroTrustPoint1 !== undefined ? settings.heroTrustPoint1 : 'Sin pedido mínimo (desde 1 pz)') {
+      defaults.push({
+        id: 'feat-1',
+        label: settings.heroTrustPoint1 || 'Sin pedido mínimo (desde 1 pz)',
+        description: '¡Puedes ordenar desde una sola pieza personalizada sin ningún recargo o cantidad mínima!',
+        icon: 'check',
+        actionType: 'info'
+      });
+    }
+    if (settings.heroTrustPoint2 !== undefined ? settings.heroTrustPoint2 : 'Tintas UltraChrome resistentes') {
+      defaults.push({
+        id: 'feat-2',
+        label: settings.heroTrustPoint2 || 'Tintas UltraChrome resistentes',
+        description: 'Nuestras tintas UltraChrome HD no se decoloran, resisten cientos de lavadas y microondas.',
+        icon: 'flame',
+        actionType: 'info'
+      });
+    }
+    if (settings.heroTrustPoint3 !== undefined ? settings.heroTrustPoint3 : 'Seguimiento paso a paso') {
+      defaults.push({
+        id: 'feat-3',
+        label: settings.heroTrustPoint3 || 'Seguimiento paso a paso',
+        description: 'Te enviamos fotos del proceso y notificaciones en tiempo real del avance de tu pedido por WhatsApp.',
+        icon: 'shield',
+        actionType: 'info'
+      });
+    }
+    return defaults;
+  }, [settings.heroFeatureButtons, settings.heroTrustPoint1, settings.heroTrustPoint2, settings.heroTrustPoint3]);
+
+  const renderFeatureIcon = (iconName?: string) => {
+    switch (iconName) {
+      case 'flame': return <Flame className="w-4 h-4 text-amber-400 shrink-0" />;
+      case 'shield': return <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />;
+      case 'truck': return <Truck className="w-4 h-4 text-sky-400 shrink-0" />;
+      case 'sparkles': return <Sparkles className="w-4 h-4 text-pink-400 shrink-0" />;
+      case 'clock': return <Clock className="w-4 h-4 text-indigo-400 shrink-0" />;
+      case 'star': return <Star className="w-4 h-4 text-yellow-400 shrink-0" />;
+      case 'heart': return <Heart className="w-4 h-4 text-rose-400 shrink-0" />;
+      case 'gift': return <Gift className="w-4 h-4 text-purple-400 shrink-0" />;
+      case 'tag': return <Tag className="w-4 h-4 text-emerald-400 shrink-0" />;
+      case 'check':
+      default:
+        return <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />;
+    }
+  };
+
+  const handleFeatureButtonClick = (btn: HeroFeatureButton) => {
+    if (btn.actionType === 'catalog') {
+      const catalogEl = document.getElementById('catalog-section');
+      if (catalogEl) catalogEl.scrollIntoView({ behavior: 'smooth' });
+    } else if (btn.actionType === 'customizer') {
+      setActiveView('customizer');
+    } else if (btn.actionType === 'designs') {
+      setActiveView('designs');
+    } else if (btn.actionType === 'whatsapp') {
+      const phone = (settings.whatsappNumber || '').replace(/[^0-9]/g, '');
+      const msg = encodeURIComponent(`¡Hola! Quisiera más información sobre: "${btn.label}"`);
+      window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+    } else {
+      // Default / info modal
+      setActiveFeatureInfo(btn);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-50/50">
       
@@ -114,7 +193,7 @@ export const ProductGrid: React.FC = () => {
                     id="hero-admin-edit-btn"
                   >
                     <Edit3 className="w-3.5 h-3.5 text-indigo-200" />
-                    <span>Editar Portada</span>
+                    <span>Editar Portada & Botones</span>
                   </button>
                   <button
                     onClick={async () => {
@@ -185,21 +264,38 @@ export const ProductGrid: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Fast trust points */}
-                <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-slate-400">
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>{settings.heroTrustPoint1 || "Sin pedido mínimo (desde 1 pz)"}</span>
+                {/* Interactive Feature Buttons (Editable and Clickable) */}
+                {featureButtons.length > 0 && (
+                  <div className="pt-4 space-y-2">
+                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5">
+                      {featureButtons.map((btn) => (
+                        <button
+                          key={btn.id}
+                          type="button"
+                          onClick={() => handleFeatureButtonClick(btn)}
+                          className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 hover:border-white/30 backdrop-blur-md text-xs font-semibold text-slate-200 hover:text-white transition-all shadow-sm cursor-pointer hover:scale-105 active:scale-95 text-left"
+                          title={btn.description || `Pulsar para ver información sobre: ${btn.label}`}
+                        >
+                          {renderFeatureIcon(btn.icon)}
+                          <span>{btn.label}</span>
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-pink-300 group-hover:translate-x-0.5 transition-all shrink-0" />
+                        </button>
+                      ))}
+
+                      {isAdminLoggedIn && (
+                        <button
+                          type="button"
+                          onClick={() => setIsEditSectionModalOpen(true)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/40 border border-indigo-400/30 text-indigo-300 hover:text-white text-xs font-bold transition-all cursor-pointer shadow-2xs"
+                          title="Editar, agregar o eliminar botones de beneficios"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>Editar Botones</span>
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>{settings.heroTrustPoint2 || "Tintas UltraChrome resistentes"}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>{settings.heroTrustPoint3 || "Seguimiento paso a paso"}</span>
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Right Hero Graphic Showcase */}
@@ -463,6 +559,63 @@ export const ProductGrid: React.FC = () => {
         isOpen={isEditSectionModalOpen}
         onClose={() => setIsEditSectionModalOpen(false)}
       />
+
+      {/* Feature Info Modal (Displayed when a feature button is clicked) */}
+      {activeFeatureInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 shadow-2xl border border-slate-100 relative text-slate-900 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-xs">
+                  {renderFeatureIcon(activeFeatureInfo.icon)}
+                </div>
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-indigo-600 block">
+                    Beneficio de la Tienda
+                  </span>
+                  <h3 className="text-base font-bold text-slate-900 leading-snug">
+                    {activeFeatureInfo.label}
+                  </h3>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveFeatureInfo(null)}
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+                aria-label="Cerrar modal de información"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100 mb-5">
+              {activeFeatureInfo.description || "Garantizamos la máxima calidad y atención en cada detalle de tus artículos y sublimaciones personalizadas."}
+            </p>
+
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const info = activeFeatureInfo;
+                  setActiveFeatureInfo(null);
+                  if (info.actionType === 'whatsapp') {
+                    const phone = (settings.whatsappNumber || '').replace(/[^0-9]/g, '');
+                    const msg = encodeURIComponent(`¡Hola! Quisiera más información sobre: "${info.label}"`);
+                    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+                  } else if (info.actionType === 'customizer') {
+                    setActiveView('customizer');
+                  } else if (info.actionType === 'designs') {
+                    setActiveView('designs');
+                  }
+                }}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition-all cursor-pointer"
+              >
+                Entendido
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

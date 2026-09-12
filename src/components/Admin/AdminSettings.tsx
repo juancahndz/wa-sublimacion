@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { StoreSettings, CategoryOption } from '../../types';
+import { StoreSettings, CategoryOption, HeroFeatureButton } from '../../types';
 import { 
   Settings, 
   Save, 
@@ -20,7 +20,14 @@ import {
   Trash2,
   SlidersHorizontal,
   Eye,
-  EyeOff
+  EyeOff,
+  Clock,
+  Star,
+  Heart,
+  Gift,
+  Tag,
+  Flame,
+  ShieldCheck
 } from 'lucide-react';
 import { compressImageFile } from '../../utils/imageCompressor';
 
@@ -28,6 +35,7 @@ export const AdminSettings: React.FC = () => {
   const { settings, updateSettings, resetToInitialData, showToast } = useStore();
   const [form, setForm] = useState<StoreSettings>({ ...settings });
   const [newCatLabel, setNewCatLabel] = useState('');
+  const [newFeatureBtnLabel, setNewFeatureBtnLabel] = useState('');
 
   // Always keep form synchronized with store settings
   useEffect(() => {
@@ -43,6 +51,68 @@ export const AdminSettings: React.FC = () => {
     if (confirm("¿Seguro que deseas restablecer todos los datos de muestra (productos, pedidos e inventario)? Los cambios locales se reiniciarán.")) {
       resetToInitialData();
     }
+  };
+
+  const featureButtonsList: HeroFeatureButton[] = useMemo(() => {
+    if (form.heroFeatureButtons !== undefined) {
+      return form.heroFeatureButtons;
+    }
+    const btns: HeroFeatureButton[] = [];
+    if (form.heroTrustPoint1 !== undefined ? form.heroTrustPoint1 : 'Sin pedido mínimo (desde 1 pz)') {
+      btns.push({
+        id: 'feat-1',
+        label: form.heroTrustPoint1 || 'Sin pedido mínimo (desde 1 pz)',
+        description: '¡Puedes ordenar desde una sola pieza personalizada sin ningún recargo o cantidad mínima!',
+        icon: 'check',
+        actionType: 'info'
+      });
+    }
+    if (form.heroTrustPoint2 !== undefined ? form.heroTrustPoint2 : 'Tintas UltraChrome resistentes') {
+      btns.push({
+        id: 'feat-2',
+        label: form.heroTrustPoint2 || 'Tintas UltraChrome resistentes',
+        description: 'Nuestras tintas UltraChrome HD no se decoloran, resisten cientos de lavadas y microondas.',
+        icon: 'flame',
+        actionType: 'info'
+      });
+    }
+    if (form.heroTrustPoint3 !== undefined ? form.heroTrustPoint3 : 'Seguimiento paso a paso') {
+      btns.push({
+        id: 'feat-3',
+        label: form.heroTrustPoint3 || 'Seguimiento paso a paso',
+        description: 'Te enviamos fotos del proceso y notificaciones en tiempo real del avance de tu pedido por WhatsApp.',
+        icon: 'shield',
+        actionType: 'info'
+      });
+    }
+    return btns;
+  }, [form.heroFeatureButtons, form.heroTrustPoint1, form.heroTrustPoint2, form.heroTrustPoint3]);
+
+  const handleAddFeatureButton = () => {
+    if (!newFeatureBtnLabel.trim()) return;
+    const current = [...featureButtonsList];
+    const newBtn: HeroFeatureButton = {
+      id: `feat-${Date.now()}`,
+      label: newFeatureBtnLabel.trim(),
+      description: `Información sobre ${newFeatureBtnLabel.trim()}`,
+      icon: 'check',
+      actionType: 'info'
+    };
+    setForm({ ...form, heroFeatureButtons: [...current, newBtn] });
+    setNewFeatureBtnLabel('');
+    showToast("Botón añadido. Guarda los cambios para aplicar.", "info");
+  };
+
+  const handleDeleteFeatureButton = (index: number) => {
+    const updated = featureButtonsList.filter((_, i) => i !== index);
+    setForm({ ...form, heroFeatureButtons: updated });
+    showToast("Botón eliminado de la lista.", "info");
+  };
+
+  const handleUpdateFeatureButton = (index: number, fields: Partial<HeroFeatureButton>) => {
+    const updated = [...featureButtonsList];
+    updated[index] = { ...updated[index], ...fields };
+    setForm({ ...form, heroFeatureButtons: updated });
   };
 
   const handleAddCategory = () => {
@@ -489,37 +559,116 @@ export const AdminSettings: React.FC = () => {
               />
             </div>
 
-            <div>
-              <label className="font-bold text-slate-700 block mb-1">Beneficio 1 (Check)</label>
-              <input
-                type="text"
-                value={form.heroTrustPoint1 || ''}
-                onChange={e => setForm({ ...form, heroTrustPoint1: e.target.value })}
-                placeholder="Sin pedido mínimo (desde 1 pz)"
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
-              />
-            </div>
+            {/* Feature Buttons (Botones de Beneficios & Garantías) */}
+            <div className="sm:col-span-2 bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <label className="font-bold text-slate-800 block text-xs">
+                    Botones de Beneficios & Garantías de Portada ({featureButtonsList.length})
+                  </label>
+                  <p className="text-[11px] text-slate-500">
+                    Botones interactivos en la portada. Puedes cambiar su texto, mensaje explicativo, icono o eliminarlos.
+                  </p>
+                </div>
+              </div>
 
-            <div>
-              <label className="font-bold text-slate-700 block mb-1">Beneficio 2 (Check)</label>
-              <input
-                type="text"
-                value={form.heroTrustPoint2 || ''}
-                onChange={e => setForm({ ...form, heroTrustPoint2: e.target.value })}
-                placeholder="Tintas UltraChrome resistentes"
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
-              />
-            </div>
+              {featureButtonsList.length === 0 ? (
+                <div className="p-3 bg-white rounded-xl border border-dashed border-slate-300 text-center text-xs text-slate-400">
+                  No hay botones de beneficios configurados.
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                  {featureButtonsList.map((btn, index) => (
+                    <div key={btn.id || index} className="p-2.5 bg-white rounded-xl border border-slate-200 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-5 h-5 rounded-md bg-indigo-100 text-indigo-700 font-bold text-[10px] flex items-center justify-center shrink-0">
+                          {index + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={btn.label}
+                          onChange={e => handleUpdateFeatureButton(index, { label: e.target.value })}
+                          placeholder="Texto del botón (ej: Sin pedido mínimo)"
+                          className="flex-1 px-2.5 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteFeatureButton(index)}
+                          className="p-1.5 text-rose-500 hover:text-white hover:bg-rose-600 rounded-lg transition-colors cursor-pointer shrink-0"
+                          title="Eliminar este botón"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
 
-            <div>
-              <label className="font-bold text-slate-700 block mb-1">Beneficio 3 (Check)</label>
-              <input
-                type="text"
-                value={form.heroTrustPoint3 || ''}
-                onChange={e => setForm({ ...form, heroTrustPoint3: e.target.value })}
-                placeholder="Seguimiento paso a paso"
-                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
-              />
+                      <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 text-xs">
+                        <div className="sm:col-span-6">
+                          <input
+                            type="text"
+                            value={btn.description || ''}
+                            onChange={e => handleUpdateFeatureButton(index, { description: e.target.value })}
+                            placeholder="Mensaje explicativo al pulsar..."
+                            className="w-full px-2.5 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-600"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-3">
+                          <select
+                            value={btn.icon || 'check'}
+                            onChange={e => handleUpdateFeatureButton(index, { icon: e.target.value })}
+                            className="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-700 font-medium"
+                          >
+                            <option value="check">✔ Check</option>
+                            <option value="flame">🔥 Llama</option>
+                            <option value="shield">🛡️ Escudo</option>
+                            <option value="truck">🚚 Envío</option>
+                            <option value="sparkles">✨ Destello</option>
+                            <option value="clock">⏱️ Reloj</option>
+                            <option value="star">⭐ Estrella</option>
+                            <option value="heart">❤️ Corazón</option>
+                            <option value="gift">🎁 Regalo</option>
+                            <option value="tag">🏷️ Oferta</option>
+                          </select>
+                        </div>
+
+                        <div className="sm:col-span-3">
+                          <select
+                            value={btn.actionType || 'info'}
+                            onChange={e => handleUpdateFeatureButton(index, { actionType: e.target.value as any })}
+                            className="w-full px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[11px] text-slate-700 font-medium"
+                          >
+                            <option value="info">💬 Mostrar Info</option>
+                            <option value="catalog">🛍️ Ver Catálogo</option>
+                            <option value="customizer">🎨 Personalizador</option>
+                            <option value="designs">🖼️ Ver Diseños</option>
+                            <option value="whatsapp">📱 WhatsApp</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add new button */}
+              <div className="flex gap-2 pt-1">
+                <input
+                  type="text"
+                  value={newFeatureBtnLabel}
+                  onChange={e => setNewFeatureBtnLabel(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddFeatureButton(); } }}
+                  placeholder="Escribe el texto de un nuevo botón..."
+                  className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddFeatureButton}
+                  className="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer shrink-0 transition-colors shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Agregar Botón</span>
+                </button>
+              </div>
             </div>
 
             <div>
