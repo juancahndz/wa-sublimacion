@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Order, OrderStatus } from '../../types';
 import { 
+  ArrowLeft,
   Search, 
   Truck, 
   Clock, 
@@ -127,6 +128,19 @@ export const OrderTracking: React.FC = () => {
     <div className="min-h-screen bg-slate-50/60 py-10 sm:py-16">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => { setActiveView('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs shadow-2xs transition-all cursor-pointer group"
+            id="order-tracking-back-btn"
+          >
+            <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Volver al Catálogo</span>
+          </button>
+        </div>
+
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-8 space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200/70 text-indigo-700 text-xs font-bold uppercase tracking-wider">

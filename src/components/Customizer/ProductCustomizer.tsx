@@ -3,6 +3,7 @@ import { useStore } from '../../context/StoreContext';
 import { MockupCanvas } from './MockupCanvas';
 import { Product, DesignTemplate, CustomDesignData } from '../../types';
 import { 
+  ArrowLeft,
   Upload, 
   Type, 
   Palette, 
@@ -248,6 +249,19 @@ export const ProductCustomizer: React.FC = () => {
     <section className="py-8 sm:py-12 bg-slate-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
+        {/* Back Button */}
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={() => { setActiveView('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs shadow-2xs transition-all cursor-pointer group"
+            id="product-customizer-back-btn"
+          >
+            <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Volver al Catálogo</span>
+          </button>
+        </div>
+
         {/* Header Title */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>

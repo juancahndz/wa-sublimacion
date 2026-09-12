@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { InventoryItem, InventoryCategory } from '../../types';
 import { useStore } from '../../context/StoreContext';
-import { X, Save, Boxes } from 'lucide-react';
+import { ArrowLeft, X, Save, Boxes } from 'lucide-react';
 
 interface InventoryFormModalProps {
   itemToEdit?: InventoryItem | null;
@@ -82,7 +82,17 @@ export const InventoryFormModal: React.FC<InventoryFormModalProps> = ({ itemToEd
       <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative">
         
         <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold shadow-2xs group"
+              title="Regresar / Cancelar"
+              id="inventory-form-back-btn"
+            >
+              <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="hidden sm:inline">Atrás</span>
+            </button>
             <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
               <Boxes className="w-4 h-4" />
             </div>
@@ -90,7 +100,12 @@ export const InventoryFormModal: React.FC<InventoryFormModalProps> = ({ itemToEd
               {itemToEdit ? 'Editar Insumo / Blanco' : 'Registrar Insumo en Inventario'}
             </h3>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
+          <button 
+            type="button"
+            onClick={onClose} 
+            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            aria-label="Cerrar modal"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { DesignTemplate, Product } from '../../types';
 import { 
+  ArrowLeft,
   Palette, 
   Sparkles, 
   Search, 
@@ -93,6 +94,19 @@ export const DesignGallery: React.FC = () => {
     <div className="min-h-screen bg-slate-50 py-8 sm:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         
+        {/* Back Button */}
+        <div>
+          <button
+            type="button"
+            onClick={() => { setActiveView('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs shadow-xs transition-all cursor-pointer group"
+            id="design-gallery-back-btn"
+          >
+            <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Volver al Catálogo</span>
+          </button>
+        </div>
+
         {/* Header Title */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-slate-200">
           <div>
@@ -219,12 +233,28 @@ export const DesignGallery: React.FC = () => {
       {selectedTemplateForModal && selectedProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative my-8">
-            <button
-              onClick={() => setSelectedTemplateForModal(null)}
-              className="absolute top-5 right-5 p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 cursor-pointer"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            
+            {/* Top Bar with Back Arrow and Close */}
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
+              <button
+                type="button"
+                onClick={() => setSelectedTemplateForModal(null)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold text-xs transition-colors cursor-pointer group shadow-2xs"
+                title="Volver a los Diseños"
+              >
+                <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+                <span>Volver a Diseños</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setSelectedTemplateForModal(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+                aria-label="Cerrar modal"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
 
             <div className="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
               <img 

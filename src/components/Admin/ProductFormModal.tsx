@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Product, ProductCategory, ProductMockupType, ProductVariant } from '../../types';
 import { useStore } from '../../context/StoreContext';
-import { X, Plus, Trash2, Upload, Sparkles, Layers, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, X, Plus, Trash2, Upload, Sparkles, Layers, Image as ImageIcon } from 'lucide-react';
 import { compressImageFile } from '../../utils/imageCompressor';
 
 interface ProductFormModalProps {
@@ -220,6 +220,16 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
         {/* Header */}
         <div className="flex items-center justify-between pb-4 mb-6 border-b border-slate-100">
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs group"
+              title="Regresar / Cancelar"
+              id="product-form-back-btn"
+            >
+              <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="hidden sm:inline">Atrás</span>
+            </button>
             <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
               <Layers className="w-5 h-5" />
             </div>
@@ -234,8 +244,10 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            aria-label="Cerrar modal"
           >
             <X className="w-5 h-5" />
           </button>

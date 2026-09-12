@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Order, OrderStatus, PaymentStatus } from '../../types';
 import { useStore } from '../../context/StoreContext';
 import { 
+  ArrowLeft,
   X, 
   Download, 
   Printer, 
@@ -93,6 +94,16 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, onClo
         {/* Header */}
         <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold shadow-2xs group"
+              title="Volver a Órdenes"
+              id="order-detail-back-btn"
+            >
+              <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="hidden sm:inline">Atrás</span>
+            </button>
             <span className="text-xl font-black font-mono text-slate-900">
               #{order.trackingCode}
             </span>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { CheckoutModal } from './CheckoutModal';
 import { 
+  ArrowLeft,
   X, 
   ShoppingBag, 
   Trash2, 
@@ -43,19 +44,33 @@ export const CartDrawer: React.FC = () => {
           <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between">
             
             {/* Drawer Header */}
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
-                  <ShoppingBag className="w-4 h-4" />
+            <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setIsCartOpen(false)}
+                  className="p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold shadow-2xs group"
+                  title="Seguir comprando"
+                  id="cart-drawer-back-btn"
+                >
+                  <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+                  <span className="hidden sm:inline">Atrás</span>
+                </button>
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                    <ShoppingBag className="w-4 h-4" />
+                  </div>
+                  <h2 className="text-base font-bold text-slate-900">
+                    Carrito ({cart.length})
+                  </h2>
                 </div>
-                <h2 className="text-base font-bold text-slate-900">
-                  Tu Carrito ({cart.length})
-                </h2>
               </div>
 
               <button
+                type="button"
                 onClick={() => setIsCartOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100"
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 cursor-pointer"
+                aria-label="Cerrar carrito"
               >
                 <X className="w-5 h-5" />
               </button>

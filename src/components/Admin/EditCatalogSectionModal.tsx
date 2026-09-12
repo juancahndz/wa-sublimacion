@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { CategoryOption } from '../../types';
-import { X, Plus, Trash2, RotateCcw, Check, Sparkles, SlidersHorizontal, Upload, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, X, Plus, Trash2, RotateCcw, Check, Sparkles, SlidersHorizontal, Upload, Image as ImageIcon } from 'lucide-react';
 import { compressImageFile } from '../../utils/imageCompressor';
 
 interface EditCatalogSectionModalProps {
@@ -128,6 +128,16 @@ export const EditCatalogSectionModal: React.FC<EditCatalogSectionModalProps> = (
         {/* Header */}
         <div className="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
           <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-bold shadow-2xs group"
+              title="Regresar / Cancelar"
+              id="edit-catalog-section-back-btn"
+            >
+              <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+              <span className="hidden sm:inline">Atrás</span>
+            </button>
             <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
               <SlidersHorizontal className="w-5 h-5" />
             </div>
@@ -142,8 +152,10 @@ export const EditCatalogSectionModal: React.FC<EditCatalogSectionModalProps> = (
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+            className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            aria-label="Cerrar modal"
           >
             <X className="w-5 h-5" />
           </button>

@@ -6,6 +6,7 @@ import { AdminDesigns } from './AdminDesigns';
 import { AdminInventory } from './AdminInventory';
 import { AdminSettings } from './AdminSettings';
 import { 
+  ArrowLeft,
   Package, 
   ShoppingBag, 
   Boxes, 
@@ -42,6 +43,14 @@ export const AdminDashboard: React.FC = () => {
         {/* Top Header Row */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-6 border-b border-slate-200">
           <div>
+            <button
+              onClick={() => { setActiveView('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 mb-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-bold text-xs shadow-2xs transition-all cursor-pointer group"
+              id="admin-dashboard-back-btn"
+            >
+              <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Volver a la Tienda</span>
+            </button>
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
@@ -58,10 +67,11 @@ export const AdminDashboard: React.FC = () => {
 
           <div className="flex items-center gap-2.5">
             <button
-              onClick={() => setActiveView('catalog')}
-              className="px-4 py-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold shadow-xs transition-colors cursor-pointer"
+              onClick={() => { setActiveView('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+              className="px-4 py-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-bold shadow-xs transition-colors cursor-pointer flex items-center gap-1.5 group"
             >
-              Ver Tienda Pública
+              <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+              <span>Ver Tienda Pública</span>
             </button>
             <button
               onClick={() => {

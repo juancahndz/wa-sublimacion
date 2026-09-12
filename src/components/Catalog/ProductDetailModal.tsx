@@ -3,6 +3,7 @@ import { Product, DesignTemplate } from '../../types';
 import { useStore } from '../../context/StoreContext';
 import { ProductFormModal } from '../Admin/ProductFormModal';
 import { 
+  ArrowLeft,
   X, 
   Check, 
   Star, 
@@ -10,14 +11,14 @@ import {
   Printer, 
   MessageCircle, 
   Truck, 
-  CheckCircle2,
-  AlertCircle,
-  Palette,
-  Sparkles,
-  Trash2,
-  Edit3,
-  ShieldCheck,
-  Image as ImageIcon
+  CheckCircle2, 
+  AlertCircle, 
+  Palette, 
+  Sparkles, 
+  Trash2, 
+  Edit3, 
+  ShieldCheck, 
+  Image as ImageIcon 
 } from 'lucide-react';
 
 interface ProductDetailModalProps {
@@ -117,14 +118,28 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
       <div className="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative my-8">
         
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors cursor-pointer z-10"
-          aria-label="Cerrar modal"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Top Header Bar with Back Arrow and Close */}
+        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold text-xs transition-all cursor-pointer shadow-2xs group"
+            title="Regresar al Catálogo"
+            id="product-modal-back-btn"
+          >
+            <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Volver al Catálogo</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+            aria-label="Cerrar modal"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         {/* Admin Bar inside Modal */}
         {isAdminLoggedIn && (

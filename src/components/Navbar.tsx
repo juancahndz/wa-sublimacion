@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { 
+  ArrowLeft,
   Sparkles, 
   Palette, 
   Search, 
@@ -104,8 +105,20 @@ export const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           
-          {/* Brand Logo */}
+          {/* Brand Logo & Back Button */}
           <div className="flex items-center gap-2">
+            {activeView !== 'catalog' && (
+              <button
+                onClick={() => { setActiveView('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs border border-indigo-200 transition-all cursor-pointer shadow-2xs group shrink-0"
+                title="Regresar al Catálogo Principal"
+                id="navbar-back-btn"
+              >
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform text-indigo-600" />
+                <span className="hidden sm:inline">Atrás</span>
+              </button>
+            )}
+
             <button 
               onClick={() => { setActiveView('catalog'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
               onDoubleClick={handleLogoDoubleClick}

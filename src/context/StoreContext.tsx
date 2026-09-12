@@ -117,7 +117,33 @@ const STORAGE_KEYS = {
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Navigation & Views
-  const [activeView, setActiveView] = useState<ActiveView>('catalog');
+  const [activeView, setActiveViewState] = useState<ActiveView>('catalog');
+
+  const setActiveView = (view: ActiveView) => {
+    setActiveViewState(view);
+    if (typeof window !== 'undefined' && window.history) {
+      window.history.pushState({ view }, '', '');
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Set initial history state
+    window.history.replaceState({ view: 'catalog' }, '', '');
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.view) {
+        setActiveViewState(event.state.view);
+      } else {
+        setActiveViewState('catalog');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
   const [isAdminAuthModalOpen, setIsAdminAuthModalOpen] = useState<boolean>(false);
