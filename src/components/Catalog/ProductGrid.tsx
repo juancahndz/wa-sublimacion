@@ -22,7 +22,10 @@ import {
   Plus,
   Settings,
   Lock,
-  Edit3
+  Edit3,
+  Trash2,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 export const ProductGrid: React.FC = () => {
@@ -33,6 +36,7 @@ export const ProductGrid: React.FC = () => {
     setIsAdminAuthModalOpen, 
     setAdminTab, 
     settings,
+    updateSettings,
     selectedCategory,
     setSelectedCategory
   } = useStore();
@@ -90,114 +94,189 @@ export const ProductGrid: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50/50">
       
-      {/* Hero Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white py-16 sm:py-24">
-        {/* Background ambient lighting */}
-        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 rounded-full bg-pink-500/20 blur-3xl pointer-events-none" />
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-pink-300">
-                <Sparkles className="w-4 h-4 text-pink-400 animate-pulse" />
-                <span>Sublimación & Diseños Exclusivos en Existencia</span>
-              </div>
-
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-none text-white">
-                {settings.heroTitle ? (
-                  settings.heroTitle
-                ) : (
-                  <>
-                    Diseños Disponibles en <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">Tazas, Ropa y Accesorios</span>
-                  </>
-                )}
-              </h1>
-
-              <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
-                {settings.heroSubtitle || "Explora nuestras colecciones en existencia listas para entrega inmediata. Impresión fotográfica indeleble de alta definición."}
-              </p>
-
-              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
-                <button
-                  onClick={() => {
-                    const catalogEl = document.getElementById('catalog-section');
-                    if (catalogEl) catalogEl.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  id="hero-view-catalog-btn"
-                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl shadow-indigo-900/40 hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
-                >
-                  <Store className="w-4 h-4" />
-                  Ver Productos en Stock
-                </button>
-
-                <button
-                  onClick={() => setActiveView('designs')}
-                  id="hero-view-designs-btn"
-                  className="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 backdrop-blur-md transition-all flex items-center gap-2 cursor-pointer"
-                >
-                  <Palette className="w-4 h-4" />
-                  Galería de Diseños
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Fast trust points */}
-              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-slate-400">
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Sin pedido mínimo (desde 1 pz)</span>
+      {/* Hero Banner (Conditional based on settings.hideHeroBanner) */}
+      {!settings.hideHeroBanner ? (
+        <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white py-16 sm:py-24">
+          
+          {/* Admin Control Bar for Hero Banner */}
+          {isAdminLoggedIn && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-20 mb-6">
+              <div className="bg-slate-900/90 backdrop-blur-md border border-indigo-500/40 rounded-2xl p-3 sm:px-4 flex flex-wrap items-center justify-between gap-3 shadow-xl">
+                <div className="flex items-center gap-2 text-xs text-indigo-300 font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>Sección de Portada Principal</span>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Tintas UltraChrome resistentes</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Seguimiento paso a paso</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Hero Graphic Showcase */}
-            <div className="lg:col-span-5 relative flex justify-center">
-              <div className="relative w-full max-w-sm aspect-square rounded-3xl bg-gradient-to-tr from-white/10 to-white/5 border border-white/15 p-4 shadow-2xl backdrop-blur-md flex items-center justify-center group">
-                <img 
-                  src={settings.heroImageUrl || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80"} 
-                  alt="Imagen destacada de sublimación" 
-                  className="w-full h-full object-cover rounded-2xl shadow-inner"
-                  referrerPolicy="no-referrer"
-                />
-                
-                {/* Admin Quick Edit Hero Image Button */}
-                {isAdminLoggedIn && (
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => setIsEditSectionModalOpen(true)}
-                    className="absolute top-6 right-6 px-3 py-1.5 bg-slate-900/80 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-lg border border-white/20 backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 z-20"
-                    title="Cambiar imagen y textos de portada"
+                    className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer hover:scale-105"
+                    title="Editar textos, botones e imagen de la portada"
+                    id="hero-admin-edit-btn"
                   >
-                    <Edit3 className="w-3.5 h-3.5 text-pink-400" />
-                    <span>Editar Imagen</span>
+                    <Edit3 className="w-3.5 h-3.5 text-indigo-200" />
+                    <span>Editar Portada</span>
                   </button>
-                )}
-
-                {/* Floating mini badge */}
-                <div className="absolute -bottom-4 -left-4 bg-white text-slate-900 p-3.5 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3 z-10">
-                  <div className="w-10 h-10 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center font-black">
-                    {settings.heroBadgeTag || "HD"}
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold">{settings.heroBadgeTitle || "Sublimación Térmica"}</div>
-                    <div className="text-[11px] text-slate-500">{settings.heroBadgeSubtitle || "200°C / Presión Uniforme"}</div>
-                  </div>
+                  <button
+                    onClick={async () => {
+                      if (window.confirm('¿Deseas ocultar / eliminar la portada principal de la tienda? Podrás volver a mostrarla cuando quieras.')) {
+                        await updateSettings({ hideHeroBanner: true });
+                      }
+                    }}
+                    className="px-3 py-1.5 bg-rose-600/90 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer hover:scale-105"
+                    title="Ocultar / Eliminar esta sección"
+                    id="hero-admin-delete-btn"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-rose-200" />
+                    <span>Eliminar Portada</span>
+                  </button>
                 </div>
               </div>
             </div>
+          )}
 
+          {/* Background ambient lighting */}
+          <div className="absolute top-0 right-0 -mt-12 -mr-12 w-96 h-96 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 -mb-12 -ml-12 w-96 h-96 rounded-full bg-pink-500/20 blur-3xl pointer-events-none" />
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+              
+              <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-pink-300">
+                  <Sparkles className="w-4 h-4 text-pink-400 animate-pulse" />
+                  <span>{settings.heroTopBadgeText || "Sublimación & Diseños Exclusivos en Existencia"}</span>
+                </div>
+
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-none text-white">
+                  {settings.heroTitle ? (
+                    settings.heroTitle
+                  ) : (
+                    <>
+                      Diseños Disponibles en <span className="bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">Tazas, Ropa y Accesorios</span>
+                    </>
+                  )}
+                </h1>
+
+                <p className="text-sm sm:text-base text-slate-300 max-w-2xl leading-relaxed">
+                  {settings.heroSubtitle || "Explora nuestras colecciones en existencia listas para entrega inmediata. Impresión fotográfica indeleble de alta definición."}
+                </p>
+
+                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
+                  <button
+                    onClick={() => {
+                      const catalogEl = document.getElementById('catalog-section');
+                      if (catalogEl) catalogEl.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    id="hero-view-catalog-btn"
+                    className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl shadow-indigo-900/40 hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <Store className="w-4 h-4" />
+                    {settings.heroPrimaryButtonText || "Ver Productos en Stock"}
+                  </button>
+
+                  <button
+                    onClick={() => setActiveView('designs')}
+                    id="hero-view-designs-btn"
+                    className="px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 backdrop-blur-md transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <Palette className="w-4 h-4" />
+                    {settings.heroSecondaryButtonText || "Galería de Diseños"}
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Fast trust points */}
+                <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 text-xs text-slate-400">
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>{settings.heroTrustPoint1 || "Sin pedido mínimo (desde 1 pz)"}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>{settings.heroTrustPoint2 || "Tintas UltraChrome resistentes"}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span>{settings.heroTrustPoint3 || "Seguimiento paso a paso"}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Hero Graphic Showcase */}
+              <div className="lg:col-span-5 relative flex justify-center">
+                <div className="relative w-full max-w-sm aspect-square rounded-3xl bg-gradient-to-tr from-white/10 to-white/5 border border-white/15 p-4 shadow-2xl backdrop-blur-md flex items-center justify-center group">
+                  <img 
+                    src={settings.heroImageUrl || "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80"} 
+                    alt="Imagen destacada de sublimación" 
+                    className="w-full h-full object-cover rounded-2xl shadow-inner"
+                    referrerPolicy="no-referrer"
+                  />
+                  
+                  {/* Admin Quick Edit Hero Image Button */}
+                  {isAdminLoggedIn && (
+                    <button
+                      onClick={() => setIsEditSectionModalOpen(true)}
+                      className="absolute top-6 right-6 px-3 py-1.5 bg-slate-900/80 hover:bg-slate-900 text-white rounded-xl text-xs font-bold shadow-lg border border-white/20 backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 z-20"
+                      title="Cambiar imagen y textos de portada"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 text-pink-400" />
+                      <span>Editar Imagen</span>
+                    </button>
+                  )}
+
+                  {/* Floating mini badge */}
+                  <div className="absolute -bottom-4 -left-4 bg-white text-slate-900 p-3.5 rounded-2xl shadow-xl border border-slate-100 flex items-center gap-3 z-10">
+                    <div className="w-10 h-10 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center font-black">
+                      {settings.heroBadgeTag || "HD"}
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold">{settings.heroBadgeTitle || "Sublimación Térmica"}</div>
+                      <div className="text-[11px] text-slate-500">{settings.heroBadgeSubtitle || "200°C / Presión Uniforme"}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        /* When hidden, if Admin is logged in, show bar to restore or edit it */
+        isAdminLoggedIn && (
+          <div className="bg-slate-900 border-b border-slate-800 text-white py-3 px-4">
+            <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 flex items-center gap-1">
+                  <EyeOff className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Portada Oculta / Eliminada</span>
+                </span>
+                <span className="text-slate-300">
+                  La sección de portada está oculta para los visitantes.
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={async () => {
+                    await updateSettings({ hideHeroBanner: false });
+                  }}
+                  className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                  id="hero-admin-restore-btn"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  <span>Mostrar Portada</span>
+                </button>
+                <button
+                  onClick={() => setIsEditSectionModalOpen(true)}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                >
+                  <Edit3 className="w-3.5 h-3.5 text-indigo-300" />
+                  <span>Editar Contenido</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      )}
 
       {/* Catalog & Filter Section */}
       <section id="catalog-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">

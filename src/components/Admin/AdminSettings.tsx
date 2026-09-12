@@ -18,7 +18,9 @@ import {
   Layers,
   Plus,
   Trash2,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { compressImageFile } from '../../utils/imageCompressor';
 
@@ -270,13 +272,56 @@ export const AdminSettings: React.FC = () => {
 
         {/* Hero Section & Catalog Texts */}
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
-            <SlidersHorizontal className="w-4 h-4 text-indigo-600" />
-            <h3 className="text-sm font-bold text-slate-900">Portada Principal (Hero Showcase) & Catálogo</h3>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 pb-3">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-indigo-600" />
+              <h3 className="text-sm font-bold text-slate-900">Portada Principal (Hero Banner) & Catálogo</h3>
+            </div>
+            
+            {/* Banner Toggle Button */}
+            <div className="flex items-center gap-2">
+              <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border ${
+                form.hideHeroBanner 
+                  ? 'bg-rose-50 text-rose-700 border-rose-200' 
+                  : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              }`}>
+                {form.hideHeroBanner ? '🚫 Portada Oculta / Eliminada' : '👁️ Portada Visible'}
+              </span>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setForm(prev => ({ ...prev, hideHeroBanner: !prev.hideHeroBanner }));
+                }}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                  form.hideHeroBanner
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                    : 'bg-rose-600 hover:bg-rose-500 text-white'
+                }`}
+              >
+                {form.hideHeroBanner ? (
+                  <>
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Mostrar Portada</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Eliminar Portada</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
+          {form.hideHeroBanner && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
+              ⚠️ <strong>La portada está desactivada/oculta</strong>. Los visitantes de la tienda verán directamente la sección de productos. Puedes volver a activarla en cualquier momento.
+            </div>
+          )}
+
           {/* Hero Showcase Image & Badge */}
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+          <div className={`bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3 ${form.hideHeroBanner ? 'opacity-60' : ''}`}>
             <div className="flex items-center justify-between">
               <div>
                 <label className="font-bold text-slate-800 block text-xs">Imagen Destacada de la Portada</label>
@@ -388,7 +433,18 @@ export const AdminSettings: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs ${form.hideHeroBanner ? 'opacity-60' : ''}`}>
+            <div className="sm:col-span-2">
+              <label className="font-bold text-slate-700 block mb-1">Insignia Superior (Pastilla Flotante)</label>
+              <input
+                type="text"
+                value={form.heroTopBadgeText || ''}
+                onChange={e => setForm({ ...form, heroTopBadgeText: e.target.value })}
+                placeholder="Sublimación & Diseños Exclusivos en Existencia"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+              />
+            </div>
+
             <div>
               <label className="font-bold text-slate-700 block mb-1">Título de la Portada Principal (Hero)</label>
               <input
@@ -412,6 +468,61 @@ export const AdminSettings: React.FC = () => {
             </div>
 
             <div>
+              <label className="font-bold text-slate-700 block mb-1">Texto del Botón 1 (Catálogo)</label>
+              <input
+                type="text"
+                value={form.heroPrimaryButtonText || ''}
+                onChange={e => setForm({ ...form, heroPrimaryButtonText: e.target.value })}
+                placeholder="Ver Productos en Stock"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">Texto del Botón 2 (Diseños)</label>
+              <input
+                type="text"
+                value={form.heroSecondaryButtonText || ''}
+                onChange={e => setForm({ ...form, heroSecondaryButtonText: e.target.value })}
+                placeholder="Galería de Diseños"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">Beneficio 1 (Check)</label>
+              <input
+                type="text"
+                value={form.heroTrustPoint1 || ''}
+                onChange={e => setForm({ ...form, heroTrustPoint1: e.target.value })}
+                placeholder="Sin pedido mínimo (desde 1 pz)"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">Beneficio 2 (Check)</label>
+              <input
+                type="text"
+                value={form.heroTrustPoint2 || ''}
+                onChange={e => setForm({ ...form, heroTrustPoint2: e.target.value })}
+                placeholder="Tintas UltraChrome resistentes"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+              />
+            </div>
+
+            <div>
+              <label className="font-bold text-slate-700 block mb-1">Beneficio 3 (Check)</label>
+              <input
+                type="text"
+                value={form.heroTrustPoint3 || ''}
+                onChange={e => setForm({ ...form, heroTrustPoint3: e.target.value })}
+                placeholder="Seguimiento paso a paso"
+                className="w-full px-3 py-2 border border-slate-300 rounded-xl"
+              />
+            </div>
+
+            <div>
               <label className="font-bold text-slate-700 block mb-1">Título de la Sección del Catálogo</label>
               <input
                 type="text"
@@ -422,7 +533,7 @@ export const AdminSettings: React.FC = () => {
               />
             </div>
 
-            <div>
+            <div className="sm:col-span-2">
               <label className="font-bold text-slate-700 block mb-1">Subtítulo de la Sección del Catálogo</label>
               <input
                 type="text"

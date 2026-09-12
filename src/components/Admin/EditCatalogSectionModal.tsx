@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { CategoryOption } from '../../types';
-import { ArrowLeft, X, Plus, Trash2, RotateCcw, Check, Sparkles, SlidersHorizontal, Upload, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, X, Plus, Trash2, RotateCcw, Check, Sparkles, SlidersHorizontal, Upload, Image as ImageIcon, Eye, EyeOff } from 'lucide-react';
 import { compressImageFile } from '../../utils/imageCompressor';
 
 interface EditCatalogSectionModalProps {
@@ -25,12 +25,21 @@ export const EditCatalogSectionModal: React.FC<EditCatalogSectionModalProps> = (
 
   const defaultHeroImage = "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80";
 
+  const [hideHeroBanner, setHideHeroBanner] = useState<boolean>(settings.hideHeroBanner || false);
+  const [heroTopBadgeText, setHeroTopBadgeText] = useState(settings.heroTopBadgeText || '');
+  const [heroTitle, setHeroTitle] = useState(settings.heroTitle || '');
+  const [heroSubtitle, setHeroSubtitle] = useState(settings.heroSubtitle || '');
+  const [heroPrimaryButtonText, setHeroPrimaryButtonText] = useState(settings.heroPrimaryButtonText || '');
+  const [heroSecondaryButtonText, setHeroSecondaryButtonText] = useState(settings.heroSecondaryButtonText || '');
+  const [heroTrustPoint1, setHeroTrustPoint1] = useState(settings.heroTrustPoint1 || '');
+  const [heroTrustPoint2, setHeroTrustPoint2] = useState(settings.heroTrustPoint2 || '');
+  const [heroTrustPoint3, setHeroTrustPoint3] = useState(settings.heroTrustPoint3 || '');
+
   const [heroImageUrl, setHeroImageUrl] = useState(settings.heroImageUrl || defaultHeroImage);
   const [heroBadgeTag, setHeroBadgeTag] = useState(settings.heroBadgeTag || 'HD');
   const [heroBadgeTitle, setHeroBadgeTitle] = useState(settings.heroBadgeTitle || 'Sublimación Térmica');
   const [heroBadgeSubtitle, setHeroBadgeSubtitle] = useState(settings.heroBadgeSubtitle || '200°C / Presión Uniforme');
-  const [heroTitle, setHeroTitle] = useState(settings.heroTitle || '');
-  const [heroSubtitle, setHeroSubtitle] = useState(settings.heroSubtitle || '');
+  
   const [title, setTitle] = useState(settings.catalogTitle || 'Catálogo de Productos en Existencia');
   const [subtitle, setSubtitle] = useState(settings.catalogSubtitle || 'Explora los artículos disponibles en stock con estampados listos para envío.');
   const [categories, setCategories] = useState<CategoryOption[]>(
@@ -44,12 +53,19 @@ export const EditCatalogSectionModal: React.FC<EditCatalogSectionModalProps> = (
 
   useEffect(() => {
     if (isOpen) {
+      setHideHeroBanner(settings.hideHeroBanner || false);
+      setHeroTopBadgeText(settings.heroTopBadgeText || '');
+      setHeroTitle(settings.heroTitle || '');
+      setHeroSubtitle(settings.heroSubtitle || '');
+      setHeroPrimaryButtonText(settings.heroPrimaryButtonText || '');
+      setHeroSecondaryButtonText(settings.heroSecondaryButtonText || '');
+      setHeroTrustPoint1(settings.heroTrustPoint1 || '');
+      setHeroTrustPoint2(settings.heroTrustPoint2 || '');
+      setHeroTrustPoint3(settings.heroTrustPoint3 || '');
       setHeroImageUrl(settings.heroImageUrl || defaultHeroImage);
       setHeroBadgeTag(settings.heroBadgeTag || 'HD');
       setHeroBadgeTitle(settings.heroBadgeTitle || 'Sublimación Térmica');
       setHeroBadgeSubtitle(settings.heroBadgeSubtitle || '200°C / Presión Uniforme');
-      setHeroTitle(settings.heroTitle || '');
-      setHeroSubtitle(settings.heroSubtitle || '');
       setTitle(settings.catalogTitle || 'Catálogo de Productos en Existencia');
       setSubtitle(settings.catalogSubtitle || 'Explora los artículos disponibles en stock con estampados listos para envío.');
       setCategories(
@@ -92,12 +108,19 @@ export const EditCatalogSectionModal: React.FC<EditCatalogSectionModalProps> = (
   };
 
   const handleResetDefaults = () => {
+    setHideHeroBanner(false);
+    setHeroTopBadgeText('');
+    setHeroTitle('');
+    setHeroSubtitle('');
+    setHeroPrimaryButtonText('');
+    setHeroSecondaryButtonText('');
+    setHeroTrustPoint1('');
+    setHeroTrustPoint2('');
+    setHeroTrustPoint3('');
     setHeroImageUrl(defaultHeroImage);
     setHeroBadgeTag('HD');
     setHeroBadgeTitle('Sublimación Térmica');
     setHeroBadgeSubtitle('200°C / Presión Uniforme');
-    setHeroTitle('');
-    setHeroSubtitle('');
     setTitle('Catálogo de Productos en Existencia');
     setSubtitle('Explora los artículos disponibles en stock con estampados listos para envío.');
     setCategories(defaultCategories);
@@ -107,12 +130,19 @@ export const EditCatalogSectionModal: React.FC<EditCatalogSectionModalProps> = (
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     updateSettings({
+      hideHeroBanner,
+      heroTopBadgeText: heroTopBadgeText.trim() || undefined,
+      heroTitle: heroTitle.trim() || undefined,
+      heroSubtitle: heroSubtitle.trim() || undefined,
+      heroPrimaryButtonText: heroPrimaryButtonText.trim() || undefined,
+      heroSecondaryButtonText: heroSecondaryButtonText.trim() || undefined,
+      heroTrustPoint1: heroTrustPoint1.trim() || undefined,
+      heroTrustPoint2: heroTrustPoint2.trim() || undefined,
+      heroTrustPoint3: heroTrustPoint3.trim() || undefined,
       heroImageUrl: heroImageUrl.trim() || undefined,
       heroBadgeTag: heroBadgeTag.trim() || undefined,
       heroBadgeTitle: heroBadgeTitle.trim() || undefined,
       heroBadgeSubtitle: heroBadgeSubtitle.trim() || undefined,
-      heroTitle: heroTitle.trim() || undefined,
-      heroSubtitle: heroSubtitle.trim() || undefined,
       catalogTitle: title.trim(),
       catalogSubtitle: subtitle.trim(),
       customCategories: categories
@@ -163,130 +193,273 @@ export const EditCatalogSectionModal: React.FC<EditCatalogSectionModalProps> = (
 
         <form onSubmit={handleSave} className="space-y-5">
           
-          {/* Hero Banner Showcase & Texts */}
-          <div className="space-y-4 bg-slate-50 p-4 rounded-2xl border border-slate-200">
-            <span className="text-[11px] font-black uppercase tracking-wider text-indigo-700 block">
-              1. Portada Principal (Imagen Hero & Textos)
-            </span>
+          {/* 1. Portada Principal (Hero Banner) - Editar o Eliminar */}
+          <div className="space-y-4 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-200">
+              <div>
+                <span className="text-xs font-black uppercase tracking-wider text-indigo-700 block">
+                  1. Portada Principal (Hero Banner)
+                </span>
+                <p className="text-[11px] text-slate-500">
+                  Edita los títulos, botones, beneficios e imagen, o elimina la portada por completo.
+                </p>
+              </div>
 
-            {/* Image Preview & Upload */}
-            <div className="bg-white p-3.5 rounded-xl border border-slate-200 space-y-3">
-              <label className="text-xs font-bold text-slate-800 block">
-                Imagen Destacada de la Portada (Hero Showcase)
-              </label>
+              {/* Delete / Hide or Show Banner Toggle Button */}
+              <div className="flex items-center gap-2">
+                <span className={`text-[11px] font-bold px-2.5 py-1 rounded-lg border ${
+                  hideHeroBanner 
+                    ? 'bg-rose-50 text-rose-700 border-rose-200' 
+                    : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                }`}>
+                  {hideHeroBanner ? '🚫 Portada Oculta / Eliminada' : '👁️ Portada Visible'}
+                </span>
 
-              <div className="flex flex-col sm:flex-row items-center gap-4">
-                {/* Thumbnail Preview with Badge */}
-                <div className="relative w-28 h-28 rounded-2xl bg-slate-900 border border-slate-700 overflow-hidden shrink-0 shadow-md flex items-center justify-center">
-                  <img 
-                    src={heroImageUrl || defaultHeroImage} 
-                    alt="Hero Preview" 
-                    className="w-full h-full object-cover"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setHideHeroBanner(!hideHeroBanner);
+                    showToast(
+                      !hideHeroBanner 
+                        ? "Portada marcada como eliminada/oculta. Guarda los cambios para aplicar." 
+                        : "Portada restaurada como visible.", 
+                      !hideHeroBanner ? "warning" : "info"
+                    );
+                  }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs ${
+                    hideHeroBanner
+                      ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                      : 'bg-rose-600 hover:bg-rose-500 text-white'
+                  }`}
+                  id="toggle-hero-banner-btn"
+                >
+                  {hideHeroBanner ? (
+                    <>
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Mostrar Portada</span>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Eliminar Portada</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {hideHeroBanner && (
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800">
+                ⚠️ <strong>La portada no se mostrará en la tienda</strong>. Los clientes verán directamente el catálogo de artículos. (Puedes volver a activarla cuando desees).
+              </div>
+            )}
+
+            {/* Editable Content */}
+            <div className={`space-y-4 ${hideHeroBanner ? 'opacity-50 pointer-events-none' : ''}`}>
+              
+              {/* Top Badge Text */}
+              <div>
+                <label className="text-xs font-bold text-slate-800 block mb-1">
+                  Texto de la Insignia Superior (Pastilla Flotante)
+                </label>
+                <input
+                  type="text"
+                  value={heroTopBadgeText}
+                  onChange={e => setHeroTopBadgeText(e.target.value)}
+                  placeholder="Ej: Sublimación & Diseños Exclusivos en Existencia"
+                  className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Main Headline */}
+              <div>
+                <label className="text-xs font-bold text-slate-800 block mb-1">
+                  Título Principal de la Portada
+                </label>
+                <input
+                  type="text"
+                  value={heroTitle}
+                  onChange={e => setHeroTitle(e.target.value)}
+                  placeholder="Ej: Diseños Disponibles en Tazas, Ropa y Accesorios"
+                  className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Subtitle */}
+              <div>
+                <label className="text-xs font-bold text-slate-800 block mb-1">
+                  Subtítulo / Descripción de la Portada
+                </label>
+                <textarea
+                  rows={2}
+                  value={heroSubtitle}
+                  onChange={e => setHeroSubtitle(e.target.value)}
+                  placeholder="Ej: Explora nuestras colecciones en existencia listas para entrega inmediata. Impresión fotográfica indeleble de alta definición."
+                  className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Action Buttons Labels */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-800 block mb-1">
+                    Texto del Botón 1 (Catálogo)
+                  </label>
+                  <input
+                    type="text"
+                    value={heroPrimaryButtonText}
+                    onChange={e => setHeroPrimaryButtonText(e.target.value)}
+                    placeholder="Ver Productos en Stock"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs"
                   />
-                  <div className="absolute bottom-1 left-1 bg-white/95 px-1.5 py-0.5 rounded-md text-[9px] font-bold text-slate-900 shadow-xs flex items-center gap-1">
-                    <span className="text-pink-600 font-black">{heroBadgeTag || "HD"}</span>
-                    <span className="truncate max-w-[65px]">{heroBadgeTitle || "Sublimación"}</span>
-                  </div>
                 </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-800 block mb-1">
+                    Texto del Botón 2 (Diseños)
+                  </label>
+                  <input
+                    type="text"
+                    value={heroSecondaryButtonText}
+                    onChange={e => setHeroSecondaryButtonText(e.target.value)}
+                    placeholder="Galería de Diseños"
+                    className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs"
+                  />
+                </div>
+              </div>
 
-                {/* Upload & URL Input */}
-                <div className="flex-1 w-full space-y-2">
-                  <div className="flex flex-col sm:flex-row gap-2">
+              {/* Trust Points Checklist */}
+              <div className="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2.5">
+                <label className="text-xs font-bold text-slate-800 block">
+                  Beneficios / Puntos de Confianza (Checks inferiores)
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-semibold block mb-0.5">Punto 1:</span>
                     <input
                       type="text"
-                      value={heroImageUrl}
-                      onChange={e => setHeroImageUrl(e.target.value)}
-                      placeholder="https://images.unsplash.com/... o sube tu foto"
-                      className="flex-1 px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      value={heroTrustPoint1}
+                      onChange={e => setHeroTrustPoint1(e.target.value)}
+                      placeholder="Sin pedido mínimo (desde 1 pz)"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs"
                     />
-                    <label className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs cursor-pointer text-center shrink-0 shadow-xs transition-colors flex items-center justify-center gap-1.5">
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Subir Imagen</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            try {
-                              const result = await compressImageFile(file, 1200, 0.8);
-                              setHeroImageUrl(result);
-                              showToast("Imagen de portada optimizada y cargada.", "success");
-                            } catch (err) {
-                              console.error(err);
-                            }
-                          }
-                        }}
-                      />
-                    </label>
                   </div>
-                  <p className="text-[10px] text-slate-500">
-                    Sube cualquier foto desde tu teléfono o computadora, o pega un enlace directo.
-                  </p>
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-semibold block mb-0.5">Punto 2:</span>
+                    <input
+                      type="text"
+                      value={heroTrustPoint2}
+                      onChange={e => setHeroTrustPoint2(e.target.value)}
+                      placeholder="Tintas UltraChrome resistentes"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-slate-500 font-semibold block mb-0.5">Punto 3:</span>
+                    <input
+                      type="text"
+                      value={heroTrustPoint3}
+                      onChange={e => setHeroTrustPoint3(e.target.value)}
+                      placeholder="Seguimiento paso a paso"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Badge Inputs */}
-              <div className="pt-2 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1 text-[11px]">Etiqueta / Tag</label>
-                  <input
-                    type="text"
-                    value={heroBadgeTag}
-                    onChange={e => setHeroBadgeTag(e.target.value)}
-                    placeholder="HD"
-                    maxLength={6}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-bold text-center"
-                  />
+              {/* Image Preview & Upload & Badge */}
+              <div className="bg-white p-3.5 rounded-xl border border-slate-200 space-y-3">
+                <label className="text-xs font-bold text-slate-800 block">
+                  Imagen Destacada de la Portada (Hero Showcase)
+                </label>
+
+                <div className="flex flex-col sm:flex-row items-center gap-4">
+                  {/* Thumbnail Preview with Badge */}
+                  <div className="relative w-28 h-28 rounded-2xl bg-slate-900 border border-slate-700 overflow-hidden shrink-0 shadow-md flex items-center justify-center">
+                    <img 
+                      src={heroImageUrl || defaultHeroImage} 
+                      alt="Hero Preview" 
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute bottom-1 left-1 bg-white/95 px-1.5 py-0.5 rounded-md text-[9px] font-bold text-slate-900 shadow-xs flex items-center gap-1">
+                      <span className="text-pink-600 font-black">{heroBadgeTag || "HD"}</span>
+                      <span className="truncate max-w-[65px]">{heroBadgeTitle || "Sublimación"}</span>
+                    </div>
+                  </div>
+
+                  {/* Upload & URL Input */}
+                  <div className="flex-1 w-full space-y-2">
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="text"
+                        value={heroImageUrl}
+                        onChange={e => setHeroImageUrl(e.target.value)}
+                        placeholder="https://images.unsplash.com/... o sube tu foto"
+                        className="flex-1 px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                      />
+                      <label className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs cursor-pointer text-center shrink-0 shadow-xs transition-colors flex items-center justify-center gap-1.5">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Subir Imagen</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                const result = await compressImageFile(file, 1200, 0.8);
+                                setHeroImageUrl(result);
+                                showToast("Imagen de portada optimizada y cargada.", "success");
+                              } catch (err) {
+                                console.error(err);
+                              }
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      Sube cualquier foto desde tu teléfono o computadora, o pega un enlace directo.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1 text-[11px]">Título de Insignia</label>
-                  <input
-                    type="text"
-                    value={heroBadgeTitle}
-                    onChange={e => setHeroBadgeTitle(e.target.value)}
-                    placeholder="Sublimación Térmica"
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs"
-                  />
-                </div>
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1 text-[11px]">Subtítulo de Insignia</label>
-                  <input
-                    type="text"
-                    value={heroBadgeSubtitle}
-                    onChange={e => setHeroBadgeSubtitle(e.target.value)}
-                    placeholder="200°C / Presión Uniforme"
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs"
-                  />
+
+                {/* Badge Inputs */}
+                <div className="pt-2 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1 text-[11px]">Etiqueta / Tag</label>
+                    <input
+                      type="text"
+                      value={heroBadgeTag}
+                      onChange={e => setHeroBadgeTag(e.target.value)}
+                      placeholder="HD"
+                      maxLength={6}
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs font-bold text-center"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1 text-[11px]">Título de Insignia</label>
+                    <input
+                      type="text"
+                      value={heroBadgeTitle}
+                      onChange={e => setHeroBadgeTitle(e.target.value)}
+                      placeholder="Sublimación Térmica"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-semibold text-slate-700 block mb-1 text-[11px]">Subtítulo de Insignia</label>
+                    <input
+                      type="text"
+                      value={heroBadgeSubtitle}
+                      onChange={e => setHeroBadgeSubtitle(e.target.value)}
+                      placeholder="200°C / Presión Uniforme"
+                      className="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <label className="text-xs font-bold text-slate-800 block mb-1">
-                Título de la Portada Principal
-              </label>
-              <input
-                type="text"
-                value={heroTitle}
-                onChange={e => setHeroTitle(e.target.value)}
-                placeholder="Ej: Diseños Disponibles en Tazas, Ropa y Accesorios"
-                className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-bold text-slate-800 block mb-1">
-                Subtítulo de la Portada Principal
-              </label>
-              <input
-                type="text"
-                value={heroSubtitle}
-                onChange={e => setHeroSubtitle(e.target.value)}
-                placeholder="Ej: Explora nuestras colecciones en existencia listas para entrega inmediata..."
-                className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
             </div>
           </div>
 
