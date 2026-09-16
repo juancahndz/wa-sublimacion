@@ -37,9 +37,27 @@ export function getVideoEmbedUrl(url?: string): VideoEmbedInfo {
     };
   }
 
+  // Google Drive: drive.google.com/file/d/ID/view -> drive.google.com/file/d/ID/preview
+  const driveMatch = clean.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
+  if (driveMatch && driveMatch[1]) {
+    return {
+      type: 'iframe',
+      embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+    };
+  }
+
+  // TikTok: tiktok.com/@.../video/ID
+  const tiktokMatch = clean.match(/tiktok\.com\/@[^\/]+\/video\/(\d+)/i);
+  if (tiktokMatch && tiktokMatch[1]) {
+    return {
+      type: 'iframe',
+      embedUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`
+    };
+  }
+
   // Direct MP4 / WebM / Cloudinary / Firebase Storage
   if (
-    clean.match(/\.(mp4|webm|ogg|mov)(\?.*)?$/i) ||
+    clean.match(/\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i) ||
     clean.includes('cloudinary.com') ||
     clean.includes('firebasestorage.googleapis.com')
   ) {
