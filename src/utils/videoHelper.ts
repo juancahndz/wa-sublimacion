@@ -1,11 +1,21 @@
 export interface VideoEmbedInfo {
-  type: 'youtube' | 'vimeo' | 'mp4' | 'iframe' | 'unknown';
+  type: 'youtube' | 'vimeo' | 'tiktok' | 'mp4' | 'drive' | 'iframe' | 'unknown';
   embedUrl: string;
+  originalUrl: string;
+  platformName: string;
+  directLink: string;
+  isShortenedTikTok?: boolean;
 }
 
 export function getVideoEmbedUrl(url?: string): VideoEmbedInfo {
   if (!url || !url.trim()) {
-    return { type: 'unknown', embedUrl: '' };
+    return { 
+      type: 'unknown', 
+      embedUrl: '', 
+      originalUrl: '', 
+      platformName: 'Video', 
+      directLink: '' 
+    };
   }
 
   const clean = url.trim();
@@ -15,7 +25,10 @@ export function getVideoEmbedUrl(url?: string): VideoEmbedInfo {
   if (shortsMatch && shortsMatch[1]) {
     return {
       type: 'youtube',
-      embedUrl: `https://www.youtube-nocookie.com/embed/${shortsMatch[1]}?autoplay=1&rel=0`
+      embedUrl: `https://www.youtube-nocookie.com/embed/${shortsMatch[1]}?autoplay=1&rel=0`,
+      originalUrl: clean,
+      platformName: 'YouTube Shorts',
+      directLink: clean
     };
   }
 
@@ -24,7 +37,10 @@ export function getVideoEmbedUrl(url?: string): VideoEmbedInfo {
   if (ytMatch && ytMatch[1]) {
     return {
       type: 'youtube',
-      embedUrl: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&rel=0`
+      embedUrl: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&rel=0`,
+      originalUrl: clean,
+      platformName: 'YouTube',
+      directLink: clean
     };
   }
 
@@ -33,7 +49,10 @@ export function getVideoEmbedUrl(url?: string): VideoEmbedInfo {
   if (vimeoMatch && vimeoMatch[3]) {
     return {
       type: 'vimeo',
-      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[3]}?autoplay=1`
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[3]}?autoplay=1`,
+      originalUrl: clean,
+      platformName: 'Vimeo',
+      directLink: clean
     };
   }
 
@@ -41,17 +60,36 @@ export function getVideoEmbedUrl(url?: string): VideoEmbedInfo {
   const driveMatch = clean.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/i);
   if (driveMatch && driveMatch[1]) {
     return {
-      type: 'iframe',
-      embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview`
+      type: 'drive',
+      embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview`,
+      originalUrl: clean,
+      platformName: 'Google Drive',
+      directLink: clean
     };
   }
 
-  // TikTok: tiktok.com/@.../video/ID
-  const tiktokMatch = clean.match(/tiktok\.com\/@[^\/]+\/video\/(\d+)/i);
+  // TikTok: tiktok.com/@.../video/ID or tiktok.com/v/ID
+  const tiktokMatch = clean.match(/tiktok\.com\/(?:@[^\/]+\/video\/|v\/)(\d+)/i);
   if (tiktokMatch && tiktokMatch[1]) {
     return {
-      type: 'iframe',
-      embedUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`
+      type: 'tiktok',
+      embedUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`,
+      originalUrl: clean,
+      platformName: 'TikTok',
+      directLink: clean,
+      isShortenedTikTok: false
+    };
+  }
+
+  // TikTok Shortened or profile link: vm.tiktok.com/..., vt.tiktok.com/..., tiktok.com/t/...
+  if (clean.includes('tiktok.com')) {
+    return {
+      type: 'tiktok',
+      embedUrl: clean,
+      originalUrl: clean,
+      platformName: 'TikTok',
+      directLink: clean,
+      isShortenedTikTok: true
     };
   }
 
@@ -63,13 +101,19 @@ export function getVideoEmbedUrl(url?: string): VideoEmbedInfo {
   ) {
     return {
       type: 'mp4',
-      embedUrl: clean
+      embedUrl: clean,
+      originalUrl: clean,
+      platformName: 'Video MP4',
+      directLink: clean
     };
   }
 
   // Generic fallback iframe
   return {
     type: 'iframe',
-    embedUrl: clean
+    embedUrl: clean,
+    originalUrl: clean,
+    platformName: 'Video',
+    directLink: clean
   };
 }

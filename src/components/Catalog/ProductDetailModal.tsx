@@ -21,7 +21,8 @@ import {
   ShieldCheck, 
   Image as ImageIcon,
   Film,
-  Play
+  Play,
+  ExternalLink
 } from 'lucide-react';
 
 interface ProductDetailModalProps {
@@ -417,25 +418,49 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
 
               {/* Tab 2: Video Player View */}
               {galleryTab === 'video' && product.videoUrl && (
-                <div className="p-4 bg-slate-900 text-white rounded-2xl flex items-center justify-between gap-3 border border-slate-800">
+                <div className="p-4 bg-gradient-to-r from-slate-950 to-indigo-950 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-indigo-500/30 shadow-md">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-400 shrink-0">
                       <Film className="w-5 h-5" />
                     </div>
                     <div>
-                      <div className="text-xs font-bold">Reproduciendo Video Demostrativo</div>
+                      <div className="text-xs font-bold text-white flex items-center gap-2">
+                        <span>Video Demostrativo del Producto</span>
+                        {product.videoUrl.includes('tiktok.com') && (
+                          <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 text-[10px] font-bold border border-pink-500/40">
+                            TikTok
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[11px] text-slate-300">
-                        Observa el artículo y la calidad del acabado en el reproductor de la izquierda.
+                        {product.videoUrl.includes('tiktok.com')
+                          ? "Puedes ver la demostración aquí o abrirla directamente en la app de TikTok."
+                          : "Observa el artículo y la calidad del acabado en vivo."}
                       </p>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setGalleryTab('product_images')}
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold cursor-pointer shrink-0 transition-colors"
-                  >
-                    Ver Fotos
-                  </button>
+                  
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => window.open(product.videoUrl, '_blank', 'noopener,noreferrer')}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-transform hover:scale-105 active:scale-95 shadow-md cursor-pointer ${
+                        product.videoUrl.includes('tiktok.com')
+                          ? 'bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white'
+                          : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                      }`}
+                    >
+                      <span>{product.videoUrl.includes('tiktok.com') ? 'Abrir en TikTok' : 'Abrir Video'}</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setGalleryTab('product_images')}
+                      className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                    >
+                      Ver Fotos
+                    </button>
+                  </div>
                 </div>
               )}
 
