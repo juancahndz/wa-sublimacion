@@ -178,10 +178,10 @@ export const AdminSettings: React.FC = () => {
                 required
                 value={form.adminPassword || 'admin1234'}
                 onChange={e => setForm({ ...form, adminPassword: e.target.value })}
-                placeholder="admin1234"
+                placeholder="Nueva contraseña"
                 className="w-full px-3 py-2 border border-slate-300 rounded-xl font-mono text-sm font-bold text-slate-800"
               />
-              <span className="text-[10px] text-slate-500 font-medium mt-1 block">Por defecto: admin1234</span>
+              <span className="text-[10px] text-slate-500 font-medium mt-1 block">Puedes cambiar tu contraseña en cualquier momento</span>
             </div>
           </div>
         </div>

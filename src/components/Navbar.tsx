@@ -60,8 +60,8 @@ export const Navbar: React.FC = () => {
     const inputEmail = emailInput.trim().toLowerCase();
     const inputPassword = passwordInput.trim();
 
-    const isEmailMatch = inputEmail === validEmail || inputEmail === 'admin' || inputEmail === 'admin@wasublimacion.com';
-    const isPasswordMatch = inputPassword === validPassword || inputPassword === 'admin1234';
+    const isEmailMatch = inputEmail === validEmail;
+    const isPasswordMatch = inputPassword === validPassword;
 
     if (isEmailMatch && isPasswordMatch) {
       setIsAdminLoggedIn(true);
@@ -73,7 +73,7 @@ export const Navbar: React.FC = () => {
       setMobileMenuOpen(false);
       showToast("Acceso concedido como Administrador.", 'success');
     } else {
-      setAuthError('Correo o contraseña incorrectos. Usa: admin@wasublimacion.com / admin1234');
+      setAuthError('Correo o contraseña incorrectos.');
     }
   };
 
@@ -343,9 +343,9 @@ export const Navbar: React.FC = () => {
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
-                  type="text"
+                  type="email"
                   required
-                  placeholder="admin@wasublimacion.com"
+                  placeholder="ejemplo@correo.com"
                   value={emailInput}
                   onChange={(e) => { setEmailInput(e.target.value); setAuthError(''); }}
                   className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
@@ -364,7 +364,7 @@ export const Navbar: React.FC = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  placeholder="admin1234"
+                  placeholder="••••••••"
                   value={passwordInput}
                   onChange={(e) => { setPasswordInput(e.target.value); setAuthError(''); }}
                   className="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all"
@@ -401,24 +401,6 @@ export const Navbar: React.FC = () => {
                 <Lock className="w-3.5 h-3.5" />
                 <span>Ingresar</span>
               </button>
-            </div>
-
-            {/* One-click filler for convenience */}
-            <div className="pt-3 border-t border-slate-100 text-center space-y-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmailInput('admin@wasublimacion.com');
-                  setPasswordInput('admin1234');
-                  setAuthError('');
-                }}
-                className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-100 transition-colors inline-block cursor-pointer"
-              >
-                Rellenar credenciales automáticas
-              </button>
-              <p className="text-[10px] text-slate-400">
-                Por defecto: <span className="font-mono text-slate-600">admin@wasublimacion.com</span> / <span className="font-mono text-slate-600">admin1234</span>
-              </p>
             </div>
           </form>
         </div>
