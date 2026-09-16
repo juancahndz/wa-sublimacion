@@ -1,7 +1,7 @@
 import React from 'react';
 import { Product } from '../../types';
 import { useStore } from '../../context/StoreContext';
-import { Sparkles, Star, ArrowRight, Eye, Layers, Trash2, Edit3 } from 'lucide-react';
+import { Sparkles, Star, ArrowRight, Eye, Layers, Trash2, Edit3, Film } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -81,6 +81,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView, 
         <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs px-2 py-1 rounded text-[10px] font-bold text-slate-700 border border-slate-200 shadow-xs">
           {categoryLabel}
         </span>
+
+        {/* Video Available Badge */}
+        {product.videoUrl && (
+          <span className="absolute bottom-3 left-3 bg-slate-900/90 text-indigo-300 backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-bold border border-indigo-500/30 flex items-center gap-1 shadow-xs">
+            <Film className="w-2.5 h-2.5 text-indigo-400" />
+            <span>Video</span>
+          </span>
+        )}
 
         <span className={`absolute bottom-3 right-3 px-2 py-1 rounded text-[10px] font-bold ${
           isOutOfStock 

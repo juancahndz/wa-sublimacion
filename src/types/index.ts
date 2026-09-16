@@ -29,6 +29,7 @@ export interface Product {
   description: string;
   features: string[];
   images: string[];
+  videoUrl?: string; // Optional URL for product demo video (YouTube, Shorts, TikTok, Vimeo, MP4)
   mockupType: ProductMockupType;
   linkedInventoryId?: string; // Links to raw sublimation blank
   variants: ProductVariant[];

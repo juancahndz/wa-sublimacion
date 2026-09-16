@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Product, ProductCategory, ProductMockupType, ProductVariant } from '../../types';
 import { useStore } from '../../context/StoreContext';
-import { ArrowLeft, X, Plus, Trash2, Upload, Sparkles, Layers, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, X, Plus, Trash2, Upload, Sparkles, Layers, Image as ImageIcon, Film } from 'lucide-react';
 import { compressImageFile } from '../../utils/imageCompressor';
 
 interface ProductFormModalProps {
@@ -445,6 +445,35 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Product Video (Optional) */}
+          <div className="space-y-2 pt-3 border-t border-slate-100 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <Film className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Video Demostrativo del Producto (Opcional)</span>
+              </label>
+              {formData.videoUrl && (
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, videoUrl: '' })}
+                  className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold underline cursor-pointer"
+                >
+                  Quitar video
+                </button>
+              )}
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Pega un enlace de <strong>YouTube</strong>, <strong>Shorts</strong>, <strong>TikTok</strong>, <strong>Vimeo</strong> o archivo <strong>.mp4</strong> para mostrar una demostración en vivo de este artículo.
+            </p>
+            <input
+              type="url"
+              placeholder="Ej: https://www.youtube.com/watch?v=... o https://youtube.com/shorts/..."
+              value={formData.videoUrl || ''}
+              onChange={e => setFormData({ ...formData, videoUrl: e.target.value })}
+              className="w-full px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+            />
           </div>
 
           {/* Variants */}

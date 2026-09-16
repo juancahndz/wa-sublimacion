@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Product, DesignTemplate } from '../../types';
 import { useStore } from '../../context/StoreContext';
 import { ProductFormModal } from '../Admin/ProductFormModal';
+import { ProductVideoPlayer } from './ProductVideoPlayer';
 import { 
   ArrowLeft,
   X, 
@@ -18,7 +19,9 @@ import {
   Trash2, 
   Edit3, 
   ShieldCheck, 
-  Image as ImageIcon 
+  Image as ImageIcon,
+  Film,
+  Play
 } from 'lucide-react';
 
 interface ProductDetailModalProps {
@@ -32,7 +35,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
   const [selectedVariantOptions, setSelectedVariantOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [selectedDesign, setSelectedDesign] = useState<DesignTemplate | null>(null);
-  const [galleryTab, setGalleryTab] = useState<'product_images' | 'templates'>('product_images');
+  const [galleryTab, setGalleryTab] = useState<'product_images' | 'templates' | 'video'>('product_images');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Filter designs specifically available/compatible for this product
@@ -174,16 +177,29 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
           {/* Left: Main Image Preview & Product Info */}
           <div className="md:col-span-5 space-y-4">
             <div className="aspect-square bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 shadow-inner relative group">
-              <img 
-                src={displayImage} 
-                alt={selectedDesign?.title || product.name} 
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                referrerPolicy="no-referrer"
-              />
+              {galleryTab === 'video' && product.videoUrl ? (
+                <ProductVideoPlayer videoUrl={product.videoUrl} title={product.name} />
+              ) : (
+                <img 
+                  src={displayImage} 
+                  alt={selectedDesign?.title || product.name} 
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  referrerPolicy="no-referrer"
+                />
+              )}
 
-              {/* Design or Photo overlay badge */}
-              <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs">
-                {selectedDesign ? `Diseño: ${selectedDesign.title}` : `Foto ${selectedImageIdx + 1} de ${product.images?.length || 1}`}
+              {/* Design, Photo or Video overlay badge */}
+              <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1.5">
+                {galleryTab === 'video' ? (
+                  <>
+                    <Film className="w-3 h-3 text-indigo-400" />
+                    <span>Video Demostrativo</span>
+                  </>
+                ) : selectedDesign ? (
+                  `Diseño: ${selectedDesign.title}`
+                ) : (
+                  `Foto ${selectedImageIdx + 1} de ${product.images?.length || 1}`
+                )}
               </div>
 
               <span className={`absolute bottom-3 left-3 px-2.5 py-1 rounded text-[11px] font-bold shadow-xs ${
@@ -197,10 +213,10 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
               </span>
             </div>
 
-            {/* Thumbnail strip on the left if multiple photos exist */}
-            {product.images && product.images.length > 1 && (
+            {/* Thumbnail strip on the left if multiple photos or video exist */}
+            {((product.images && product.images.length > 1) || product.videoUrl) && (
               <div className="flex gap-2 overflow-x-auto pb-1 pt-1">
-                {product.images.map((img, idx) => (
+                {product.images?.map((img, idx) => (
                   <button
                     key={idx}
                     type="button"
@@ -210,7 +226,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                       setGalleryTab('product_images');
                     }}
                     className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
-                      !selectedDesign && selectedImageIdx === idx
+                      galleryTab === 'product_images' && !selectedDesign && selectedImageIdx === idx
                         ? 'border-indigo-600 ring-2 ring-indigo-200 scale-95'
                         : 'border-slate-200 opacity-70 hover:opacity-100'
                     }`}
@@ -218,6 +234,26 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                     <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   </button>
                 ))}
+
+                {/* Video Thumbnail Button */}
+                {product.videoUrl && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGalleryTab('video');
+                      setSelectedDesign(null);
+                    }}
+                    className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer flex flex-col items-center justify-center bg-slate-900 text-white ${
+                      galleryTab === 'video'
+                        ? 'border-indigo-600 ring-2 ring-indigo-200 scale-95'
+                        : 'border-slate-200 opacity-70 hover:opacity-100'
+                    }`}
+                    title="Ver video demostrativo"
+                  >
+                    <Film className="w-5 h-5 text-indigo-400" />
+                    <span className="text-[8px] font-bold mt-0.5">Video</span>
+                  </button>
+                )}
               </div>
             )}
 
@@ -283,8 +319,26 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                     }`}
                   >
                     <ImageIcon className="w-3.5 h-3.5" />
-                    <span>Fotos del Artículo ({product.images?.length || 0})</span>
+                    <span>Fotos ({product.images?.length || 0})</span>
                   </button>
+
+                  {product.videoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGalleryTab('video');
+                        setSelectedDesign(null);
+                      }}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                        galleryTab === 'video'
+                          ? 'bg-white text-indigo-600 shadow-xs'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Film className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Video Demostrativo</span>
+                    </button>
+                  )}
 
                   {compatibleDesigns.length > 0 && (
                     <button
@@ -297,7 +351,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                       }`}
                     >
                       <Palette className="w-3.5 h-3.5" />
-                      <span>Catálogo de Diseños ({compatibleDesigns.length})</span>
+                      <span>Diseños ({compatibleDesigns.length})</span>
                     </button>
                   )}
                 </div>
@@ -305,6 +359,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                 {galleryTab === 'product_images' && (
                   <span className="text-[11px] font-semibold text-indigo-600">
                     Foto #{selectedImageIdx + 1}
+                  </span>
+                )}
+                {galleryTab === 'video' && (
+                  <span className="text-[11px] font-semibold text-indigo-600 flex items-center gap-1">
+                    <Film className="w-3 h-3" />
+                    Video Demostrativo
                   </span>
                 )}
                 {galleryTab === 'templates' && selectedDesign && (
@@ -355,7 +415,31 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                 </div>
               )}
 
-              {/* Tab 2: Design Templates */}
+              {/* Tab 2: Video Player View */}
+              {galleryTab === 'video' && product.videoUrl && (
+                <div className="p-4 bg-slate-900 text-white rounded-2xl flex items-center justify-between gap-3 border border-slate-800">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-400 shrink-0">
+                      <Film className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-bold">Reproduciendo Video Demostrativo</div>
+                      <p className="text-[11px] text-slate-300">
+                        Observa el artículo y la calidad del acabado en el reproductor de la izquierda.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setGalleryTab('product_images')}
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-xs font-semibold cursor-pointer shrink-0 transition-colors"
+                  >
+                    Ver Fotos
+                  </button>
+                </div>
+              )}
+
+              {/* Tab 3: Design Templates */}
               {galleryTab === 'templates' && (
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 max-h-52 overflow-y-auto pr-1">
                   {compatibleDesigns.map(design => {
