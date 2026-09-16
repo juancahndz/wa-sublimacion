@@ -90,15 +90,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView, 
           </span>
         )}
 
-        <span className={`absolute bottom-3 right-3 px-2 py-1 rounded text-[10px] font-bold ${
-          isOutOfStock 
-            ? 'bg-rose-500 text-white' 
-            : isLowStock 
-            ? 'bg-amber-500 text-white' 
-            : 'bg-emerald-500 text-white'
-        }`}>
-          {isOutOfStock ? 'AGOTADO' : isLowStock ? 'ÚLTIMAS PZS' : 'EN STOCK'}
-        </span>
+        {isOutOfStock && (
+          <span className="absolute bottom-3 right-3 px-2 py-1 rounded text-[10px] font-bold bg-rose-500 text-white">
+            AGOTADO
+          </span>
+        )}
 
         {/* Quick View Button */}
         {!isAdminLoggedIn && (

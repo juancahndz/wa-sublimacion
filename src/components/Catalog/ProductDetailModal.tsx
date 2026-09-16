@@ -136,15 +136,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
           </button>
 
           <div className="flex items-center gap-2">
-            <span className={`px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-bold ${
-              isOutOfStock 
-                ? 'bg-rose-100 text-rose-700' 
-                : isLowStock 
-                ? 'bg-amber-100 text-amber-700' 
-                : 'bg-emerald-100 text-emerald-700'
-            }`}>
-              {isOutOfStock ? 'Agotado' : isLowStock ? `Últimas ${availableStock} pzs` : `En Existencia (${availableStock})`}
-            </span>
+            {isOutOfStock && (
+              <span className="px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-bold bg-rose-100 text-rose-700">
+                Agotado
+              </span>
+            )}
 
             <button
               type="button"
@@ -204,15 +200,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                   <div className="absolute top-2.5 left-2.5 bg-slate-950/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1.5 pointer-events-none">
                     {selectedDesign ? `Diseño: ${selectedDesign.title}` : `Foto ${selectedImageIdx + 1} de ${product.images?.length || 1}`}
                   </div>
-                  <span className={`absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-bold shadow-xs pointer-events-none ${
-                    isOutOfStock 
-                      ? 'bg-rose-500 text-white' 
-                      : isLowStock 
-                      ? 'bg-amber-500 text-white' 
-                      : 'bg-emerald-500 text-white'
-                  }`}>
-                    {isOutOfStock ? 'Agotado' : isLowStock ? `Últimas ${availableStock} pzs` : `En Existencia (${availableStock} disp.)`}
-                  </span>
+                  {isOutOfStock && (
+                    <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-bold shadow-xs pointer-events-none bg-rose-500 text-white">
+                      Agotado
+                    </span>
+                  )}
                 </>
               )}
             </div>
