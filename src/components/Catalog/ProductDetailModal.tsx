@@ -119,104 +119,107 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white rounded-3xl max-w-4xl w-full p-6 sm:p-8 shadow-2xl border border-slate-100 relative my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-900/70 backdrop-blur-xs overflow-y-auto">
+      <div className="bg-white rounded-2xl sm:rounded-3xl max-w-4xl w-full p-4 sm:p-6 md:p-8 shadow-2xl border border-slate-100 relative my-auto max-h-[94vh] overflow-y-auto">
         
-        {/* Top Header Bar with Back Arrow and Close */}
-        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+        {/* Top Header Bar with Back Arrow, Stock status, and Close */}
+        <div className="flex items-center justify-between pb-3 sm:pb-4 mb-3 sm:mb-4 border-b border-slate-100 gap-2">
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold text-xs transition-all cursor-pointer shadow-2xs group"
+            className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold text-xs transition-all cursor-pointer shadow-2xs group shrink-0"
             title="Regresar al Catálogo"
             id="product-modal-back-btn"
           >
-            <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform" />
-            <span>Volver al Catálogo</span>
+            <ArrowLeft className="w-4 h-4 text-indigo-600 group-hover:-translate-x-0.5 transition-transform shrink-0" />
+            <span>Volver<span className="hidden sm:inline"> al Catálogo</span></span>
           </button>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
-            aria-label="Cerrar modal"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <span className={`px-2.5 py-1 rounded-lg text-[10px] sm:text-xs font-bold ${
+              isOutOfStock 
+                ? 'bg-rose-100 text-rose-700' 
+                : isLowStock 
+                ? 'bg-amber-100 text-amber-700' 
+                : 'bg-emerald-100 text-emerald-700'
+            }`}>
+              {isOutOfStock ? 'Agotado' : isLowStock ? `Últimas ${availableStock} pzs` : `En Existencia (${availableStock})`}
+            </span>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 text-slate-400 hover:text-slate-700 rounded-full hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+              aria-label="Cerrar modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Admin Bar inside Modal */}
         {isAdminLoggedIn && (
-          <div className="mb-6 -mt-2 p-3 bg-slate-900 text-white rounded-2xl flex flex-wrap items-center justify-between gap-3 border border-slate-800 shadow-sm">
+          <div className="mb-4 -mt-1 p-2.5 sm:p-3 bg-slate-900 text-white rounded-2xl flex flex-wrap items-center justify-between gap-2.5 border border-slate-800 shadow-sm">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-indigo-400" />
+              <ShieldCheck className="w-4 h-4 text-indigo-400 shrink-0" />
               <span className="text-xs font-bold text-slate-200">Acciones de Administrador</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(true)}
-                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Edit3 className="w-3.5 h-3.5" />
-                <span>Editar Producto</span>
+                <span>Editar</span>
               </button>
               <button
                 type="button"
                 onClick={handleDeleteProduct}
-                className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
-                <span>Eliminar Producto</span>
+                <span>Eliminar</span>
               </button>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-8 items-start">
           
           {/* Left: Main Image Preview & Product Info */}
-          <div className="md:col-span-5 space-y-4">
+          <div className="md:col-span-5 space-y-3 sm:space-y-4">
             <div className="aspect-square bg-slate-100 rounded-2xl overflow-hidden border border-slate-200 shadow-inner relative group">
               {galleryTab === 'video' && product.videoUrl ? (
                 <ProductVideoPlayer videoUrl={product.videoUrl} title={product.name} />
               ) : (
-                <img 
-                  src={displayImage} 
-                  alt={selectedDesign?.title || product.name} 
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  referrerPolicy="no-referrer"
-                />
+                <>
+                  <img 
+                    src={displayImage} 
+                    alt={selectedDesign?.title || product.name} 
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    referrerPolicy="no-referrer"
+                  />
+                  {/* Design or Photo overlay badge */}
+                  <div className="absolute top-2.5 left-2.5 bg-slate-950/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1.5 pointer-events-none">
+                    {selectedDesign ? `Diseño: ${selectedDesign.title}` : `Foto ${selectedImageIdx + 1} de ${product.images?.length || 1}`}
+                  </div>
+                  <span className={`absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-bold shadow-xs pointer-events-none ${
+                    isOutOfStock 
+                      ? 'bg-rose-500 text-white' 
+                      : isLowStock 
+                      ? 'bg-amber-500 text-white' 
+                      : 'bg-emerald-500 text-white'
+                  }`}>
+                    {isOutOfStock ? 'Agotado' : isLowStock ? `Últimas ${availableStock} pzs` : `En Existencia (${availableStock} disp.)`}
+                  </span>
+                </>
               )}
-
-              {/* Design, Photo or Video overlay badge */}
-              <div className="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1.5">
-                {galleryTab === 'video' ? (
-                  <>
-                    <Film className="w-3 h-3 text-indigo-400" />
-                    <span>Video Demostrativo</span>
-                  </>
-                ) : selectedDesign ? (
-                  `Diseño: ${selectedDesign.title}`
-                ) : (
-                  `Foto ${selectedImageIdx + 1} de ${product.images?.length || 1}`
-                )}
-              </div>
-
-              <span className={`absolute bottom-3 left-3 px-2.5 py-1 rounded text-[11px] font-bold shadow-xs ${
-                isOutOfStock 
-                  ? 'bg-rose-500 text-white' 
-                  : isLowStock 
-                  ? 'bg-amber-500 text-white' 
-                  : 'bg-emerald-500 text-white'
-              }`}>
-                {isOutOfStock ? 'Agotado' : isLowStock ? `Últimas ${availableStock} pzs` : `En Existencia (${availableStock} disponibles)`}
-              </span>
             </div>
 
             {/* Thumbnail strip on the left if multiple photos or video exist */}
             {((product.images && product.images.length > 1) || product.videoUrl) && (
-              <div className="flex gap-2 overflow-x-auto pb-1 pt-1">
+              <div className="flex gap-2 overflow-x-auto pb-1 pt-0.5">
                 {product.images?.map((img, idx) => (
                   <button
                     key={idx}
@@ -226,9 +229,9 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                       setSelectedDesign(null);
                       setGalleryTab('product_images');
                     }}
-                    className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
+                    className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
                       galleryTab === 'product_images' && !selectedDesign && selectedImageIdx === idx
-                        ? 'border-indigo-600 ring-2 ring-indigo-200 scale-95'
+                        ? 'border-indigo-600 ring-2 ring-indigo-200 scale-95 shadow-xs'
                         : 'border-slate-200 opacity-70 hover:opacity-100'
                     }`}
                   >
@@ -244,14 +247,14 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                       setGalleryTab('video');
                       setSelectedDesign(null);
                     }}
-                    className={`relative w-14 h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer flex flex-col items-center justify-center bg-slate-900 text-white ${
+                    className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer flex flex-col items-center justify-center bg-slate-900 text-white ${
                       galleryTab === 'video'
-                        ? 'border-indigo-600 ring-2 ring-indigo-200 scale-95'
+                        ? 'border-indigo-600 ring-2 ring-indigo-200 scale-95 shadow-xs'
                         : 'border-slate-200 opacity-70 hover:opacity-100'
                     }`}
                     title="Ver video demostrativo"
                   >
-                    <Film className="w-5 h-5 text-indigo-400" />
+                    <Film className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
                     <span className="text-[8px] font-bold mt-0.5">Video</span>
                   </button>
                 )}
@@ -259,14 +262,14 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
             )}
 
             {/* Sublimation print area badge */}
-            <div className="p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center gap-2 text-xs text-indigo-900">
+            <div className="p-2.5 sm:p-3 bg-indigo-50/70 border border-indigo-100 rounded-xl flex items-center gap-2 text-xs text-indigo-900">
               <Printer className="w-4 h-4 text-indigo-600 shrink-0" />
               <span>Estampado por sublimación térmica HD indeleble</span>
             </div>
 
             {/* Features Checklist */}
-            <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-1.5 text-xs text-slate-600">
-              <span className="font-bold text-slate-800 uppercase tracking-wider block text-[11px]">
+            <div className="bg-slate-50 p-3 sm:p-3.5 rounded-xl border border-slate-200 space-y-1.5 text-xs text-slate-600">
+              <span className="font-bold text-slate-800 uppercase tracking-wider block text-[10px] sm:text-[11px]">
                 Características del artículo:
               </span>
               <ul className="space-y-1">
@@ -281,7 +284,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
           </div>
 
           {/* Right: Images & Design Picker, Options & Purchase */}
-          <div className="md:col-span-7 space-y-5">
+          <div className="md:col-span-7 space-y-4 sm:space-y-5">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">
@@ -294,11 +297,11 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                 </div>
               </div>
 
-              <h2 className="text-xl sm:text-2xl font-bold text-slate-900 leading-tight">
+              <h2 className="text-lg sm:text-2xl font-bold text-slate-900 leading-tight">
                 {product.name}
               </h2>
 
-              <div className="text-2xl font-black text-indigo-600 mt-1">
+              <div className="text-xl sm:text-2xl font-black text-indigo-600 mt-1">
                 {settings.currency}{unitPrice.toFixed(2)}
               </div>
             </div>
@@ -306,20 +309,20 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
             {/* Article Photos & Design Picker Section */}
             <div className="space-y-2.5 pt-2 border-t border-slate-100">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl w-full sm:w-auto overflow-x-auto">
                   <button
                     type="button"
                     onClick={() => {
                       setGalleryTab('product_images');
                       setSelectedDesign(null);
                     }}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
                       galleryTab === 'product_images'
                         ? 'bg-white text-indigo-600 shadow-xs'
                         : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
-                    <ImageIcon className="w-3.5 h-3.5" />
+                    <ImageIcon className="w-3.5 h-3.5 shrink-0" />
                     <span>Fotos ({product.images?.length || 0})</span>
                   </button>
 
@@ -330,14 +333,14 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                         setGalleryTab('video');
                         setSelectedDesign(null);
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
                         galleryTab === 'video'
                           ? 'bg-white text-indigo-600 shadow-xs'
                           : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
-                      <Film className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Video Demostrativo</span>
+                      <Film className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+                      <span>Video<span className="hidden sm:inline"> Demostrativo</span></span>
                     </button>
                   )}
 
@@ -345,13 +348,13 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                     <button
                       type="button"
                       onClick={() => setGalleryTab('templates')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                      className={`flex-1 sm:flex-initial px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 whitespace-nowrap ${
                         galleryTab === 'templates'
                           ? 'bg-white text-indigo-600 shadow-xs'
                           : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
-                      <Palette className="w-3.5 h-3.5" />
+                      <Palette className="w-3.5 h-3.5 shrink-0" />
                       <span>Diseños ({compatibleDesigns.length})</span>
                     </button>
                   )}
@@ -377,7 +380,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
 
               {/* Tab 1: Product Uploaded Images */}
               {galleryTab === 'product_images' && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 max-h-52 overflow-y-auto pr-1">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-2.5 max-h-52 overflow-y-auto pr-1">
                   {product.images?.map((img, idx) => {
                     const isSelected = !selectedDesign && selectedImageIdx === idx;
                     return (
@@ -418,45 +421,46 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
 
               {/* Tab 2: Video Player View */}
               {galleryTab === 'video' && product.videoUrl && (
-                <div className="p-4 bg-gradient-to-r from-slate-950 to-indigo-950 text-white rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-indigo-500/30 shadow-md">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-400 shrink-0">
-                      <Film className="w-5 h-5" />
+                <div className="p-3 sm:p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-white rounded-2xl border border-indigo-500/30 shadow-md space-y-3">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+                      <Film className="w-4 h-4" />
                     </div>
-                    <div>
-                      <div className="text-xs font-bold text-white flex items-center gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xs font-bold text-white flex items-center gap-1.5 flex-wrap">
                         <span>Video Demostrativo del Producto</span>
                         {product.videoUrl.includes('tiktok.com') && (
-                          <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 text-[10px] font-bold border border-pink-500/40">
+                          <span className="px-1.5 py-0.5 rounded-md bg-pink-500/20 text-pink-300 text-[10px] font-bold border border-pink-500/40">
                             TikTok
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-300">
+                      <p className="text-[11px] text-slate-300 mt-0.5 leading-relaxed">
                         {product.videoUrl.includes('tiktok.com')
-                          ? "Puedes ver la demostración aquí o abrirla directamente en la app de TikTok."
-                          : "Observa el artículo y la calidad del acabado en vivo."}
+                          ? "Demostración disponible arriba o ábrela directo en TikTok."
+                          : "Demostración disponible en el visor superior."}
                       </p>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-2 shrink-0">
+                  <div className="flex items-center gap-2 pt-0.5">
                     <button
                       type="button"
                       onClick={() => window.open(product.videoUrl, '_blank', 'noopener,noreferrer')}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-transform hover:scale-105 active:scale-95 shadow-md cursor-pointer ${
+                      className={`flex-1 px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-transform hover:scale-102 active:scale-98 shadow-md cursor-pointer ${
                         product.videoUrl.includes('tiktok.com')
                           ? 'bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white'
                           : 'bg-indigo-600 hover:bg-indigo-500 text-white'
                       }`}
                     >
+                      <Play className="w-3 h-3 fill-white" />
                       <span>{product.videoUrl.includes('tiktok.com') ? 'Abrir en TikTok' : 'Abrir Video'}</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
+                      <ExternalLink className="w-3 h-3" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setGalleryTab('product_images')}
-                      className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold cursor-pointer transition-colors"
+                      className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold cursor-pointer transition-colors shrink-0"
                     >
                       Ver Fotos
                     </button>
@@ -466,7 +470,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
 
               {/* Tab 3: Design Templates */}
               {galleryTab === 'templates' && (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5 max-h-52 overflow-y-auto pr-1">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 sm:gap-2.5 max-h-52 overflow-y-auto pr-1">
                   {compatibleDesigns.map(design => {
                     const isSelected = selectedDesign?.id === design.id;
                     return (
