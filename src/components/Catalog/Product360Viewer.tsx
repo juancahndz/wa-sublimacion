@@ -180,78 +180,54 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
       <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/15 via-transparent to-black pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
-      {/* Top Status Bar & Product Switcher */}
-      <div className="relative z-20 p-2.5 sm:p-3 flex flex-wrap items-center justify-between gap-2 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md">
+      {/* Top Status Bar */}
+      <div className="relative z-20 px-3 py-2 sm:py-2.5 flex items-center justify-between gap-2 border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md">
         
         {/* Left: 360 Indicator & Angle */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-600/40 border border-indigo-400/50 text-cyan-300 text-xs shadow-xs font-black">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-indigo-600/40 border border-indigo-400/50 text-cyan-300 text-xs shadow-xs font-black shrink-0">
             <Compass className="w-3.5 h-3.5 animate-spin-slow" />
           </span>
-          <div className="flex flex-col">
-            <span className="text-[10px] sm:text-xs font-bold text-white flex items-center gap-1">
-              <span>Simulador 3D</span>
-              <span className="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/30 text-cyan-300 font-mono font-bold">
-                {Math.round(angle)}°
-              </span>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="text-xs font-bold text-white whitespace-nowrap">
+              Simulador 3D
             </span>
-            <span className="text-[9px] text-slate-400 font-medium">
-              {getAngleLabel(angle)}
+            <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/30 text-cyan-300 font-mono font-bold shrink-0">
+              {Math.round(angle)}°
+            </span>
+            <span className="text-[10px] text-slate-400 font-medium hidden sm:inline truncate">
+              • {getAngleLabel(angle)}
             </span>
           </div>
         </div>
 
-        {/* Center/Right: Product Switcher Selector if allProducts provided */}
-        <div className="flex items-center gap-2">
-          {allProducts.length > 1 && (
-            <div className="flex items-center gap-1 bg-slate-800/90 px-2 py-1 rounded-xl border border-slate-700">
-              <Package className="w-3 h-3 text-indigo-400 shrink-0" />
-              <select
-                value={currentProductId}
-                onChange={(e) => {
-                  const found = allProducts.find(p => p.id === e.target.value);
-                  if (found && onSelectProduct) onSelectProduct(found);
-                }}
-                className="bg-transparent text-slate-200 text-[10px] font-bold cursor-pointer focus:outline-none max-w-[120px] sm:max-w-[170px] truncate"
-                title="Cambiar producto en el simulador 360°"
-              >
-                {allProducts.map(p => (
-                  <option key={p.id} value={p.id} className="bg-slate-900 text-white">
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+        {/* Right: Auto-Spin Toggle Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsAutoSpinning(!isAutoSpinning);
+            setShowDragHint(false);
+          }}
+          className={`px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs shrink-0 ${
+            isAutoSpinning 
+              ? 'bg-indigo-600 text-white hover:bg-indigo-500' 
+              : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+          }`}
+          title={isAutoSpinning ? "Pausar giro automático" : "Activar giro automático"}
+        >
+          {isAutoSpinning ? (
+            <>
+              <Pause className="w-3 h-3 fill-white" />
+              <span>Pausar</span>
+            </>
+          ) : (
+            <>
+              <Play className="w-3 h-3 fill-white ml-0.5" />
+              <span>Auto-Girar</span>
+            </>
           )}
-
-          {/* Auto-Spin Toggle Button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsAutoSpinning(!isAutoSpinning);
-              setShowDragHint(false);
-            }}
-            className={`px-2.5 py-1 rounded-xl text-[10px] sm:text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs ${
-              isAutoSpinning 
-                ? 'bg-indigo-600 text-white hover:bg-indigo-500' 
-                : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
-            }`}
-            title={isAutoSpinning ? "Pausar giro automático" : "Activar giro automático"}
-          >
-            {isAutoSpinning ? (
-              <>
-                <Pause className="w-3 h-3 fill-white" />
-                <span>Pausar</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3 h-3 fill-white ml-0.5" />
-                <span>Auto-Girar</span>
-              </>
-            )}
-          </button>
-        </div>
+        </button>
       </div>
 
       {/* Center 3D Interactive Stage */}
