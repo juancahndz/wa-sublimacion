@@ -257,41 +257,6 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
       {/* Center 3D Interactive Stage */}
       <div className="relative flex-1 flex items-center justify-center p-4 min-h-[230px]">
         
-        {/* Floating Photo Angle Switcher Pills (inside 3D viewer) */}
-        {images && images.length > 1 && (
-          <div className="absolute top-2.5 inset-x-0 flex justify-center gap-1.5 z-30 pointer-events-auto px-2">
-            <div className="bg-slate-900/90 backdrop-blur-md px-2 py-1 rounded-full border border-slate-700/80 flex items-center gap-1 shadow-xl overflow-x-auto max-w-full">
-              <span className="text-[9px] font-bold text-slate-400 pl-1 hidden sm:inline">
-                Foto activa:
-              </span>
-              {images.map((img, idx) => {
-                const isCurrent = frontImage === img;
-                const slotLabels = ['1. Frente (0°)', '2. Espalda (180°)', '3. Lateral (90°)', '4. Detalle'];
-                return (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (onSelectImage) {
-                        onSelectImage(img, idx);
-                      }
-                    }}
-                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
-                      isCurrent
-                        ? 'bg-indigo-600 text-white shadow-xs ring-1 ring-indigo-400'
-                        : 'bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700'
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 rounded-full ${isCurrent ? 'bg-cyan-300' : 'bg-slate-500'}`} />
-                    <span>{slotLabels[idx] || ('Foto ' + (idx + 1))}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {/* Floor Pedestal Glow & Shadow */}
         <div className="absolute bottom-6 w-48 sm:w-56 h-8 bg-black/60 rounded-full blur-md" />
         <div className="absolute bottom-8 w-40 sm:w-48 h-3 bg-indigo-500/20 rounded-full blur-sm" />
@@ -497,11 +462,47 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
         )}
       </div>
 
-      {/* Bottom Control Bar: Quick Angles & Color Selector */}
-      <div className="relative z-20 p-2 sm:p-3 bg-slate-900/90 backdrop-blur-md border-t border-slate-800 space-y-2">
+      {/* Bottom Control Bar: Photos by Angle, Quick Angles & Color Selector */}
+      <div className="relative z-20 p-2 sm:p-2.5 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 space-y-2">
         
-        {/* Quick Angle Preset Buttons */}
-        <div className="flex items-center justify-between gap-1 sm:gap-1.5 overflow-x-auto">
+        {/* Row 1: Photos by angle (if multiple images available) */}
+        {images && images.length > 1 && (
+          <div className="flex items-center gap-1.5 pb-1.5 border-b border-slate-800/80 overflow-x-auto scrollbar-none">
+            <span className="text-[10px] font-bold text-slate-400 shrink-0 flex items-center gap-1 pl-1">
+              <ImageIcon className="w-3 h-3 text-cyan-400" />
+              <span>Foto:</span>
+            </span>
+            <div className="flex items-center gap-1 flex-1 overflow-x-auto scrollbar-none">
+              {images.map((img, idx) => {
+                const isCurrent = frontImage === img;
+                const slotLabels = ['1. Frente (0°)', '2. Espalda (180°)', '3. Lateral (90°)', '4. Detalle'];
+                return (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (onSelectImage) {
+                        onSelectImage(img, idx);
+                      }
+                    }}
+                    className={`px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-bold transition-all flex items-center gap-1 shrink-0 cursor-pointer ${
+                      isCurrent
+                        ? 'bg-indigo-600 text-white shadow-xs ring-1 ring-indigo-400'
+                        : 'bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700'
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${isCurrent ? 'bg-cyan-300' : 'bg-slate-500'}`} />
+                    <span>{slotLabels[idx] || ('Foto ' + (idx + 1))}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Row 2: Quick Angle Preset Buttons */}
+        <div className="flex items-center justify-between gap-1 sm:gap-1.5 overflow-x-auto scrollbar-none">
           <span className="text-[10px] font-bold text-slate-400 hidden sm:inline pl-1">
             Ángulo:
           </span>
