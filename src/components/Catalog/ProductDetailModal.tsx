@@ -35,22 +35,14 @@ interface ProductDetailModalProps {
 export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product: initialProduct, onClose }) => {
   const { products, designTemplates, addToCart, settings, inventory, showToast, isAdminLoggedIn, deleteProduct } = useStore();
   const [currentProduct, setCurrentProduct] = useState<Product | null>(initialProduct);
+  const product = currentProduct || initialProduct;
+
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
   const [selectedVariantOptions, setSelectedVariantOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [selectedDesign, setSelectedDesign] = useState<DesignTemplate | null>(null);
   const [galleryTab, setGalleryTab] = useState<'product_images' | 'templates' | 'video' | '360'>('product_images');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  // Filter designs specifically available/compatible for this product
-  const compatibleDesigns = useMemo(() => {
-    if (!product) return [];
-    const list = designTemplates.filter(d => 
-      d.compatibleMockups?.includes(product.mockupType) ||
-      (d.tags && d.tags.some(t => product.tags.includes(t) || product.category.includes(t)))
-    );
-    return list.length > 0 ? list : designTemplates;
-  }, [designTemplates, product]);
 
   // Set initial state when opening product: always show the product's uploaded photos first!
   useEffect(() => {
@@ -62,7 +54,16 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product:
     setGalleryTab('product_images');
   }, [initialProduct]);
 
-  const product = currentProduct || initialProduct;
+  // Filter designs specifically available/compatible for this product
+  const compatibleDesigns = useMemo(() => {
+    if (!product) return [];
+    const list = designTemplates.filter(d => 
+      d.compatibleMockups?.includes(product.mockupType) ||
+      (d.tags && d.tags.some(t => product.tags.includes(t) || product.category.includes(t)))
+    );
+    return list.length > 0 ? list : designTemplates;
+  }, [designTemplates, product]);
+
   if (!product) return null;
 
   const linkedItem = inventory.find(inv => inv.id === product.linkedInventoryId);
