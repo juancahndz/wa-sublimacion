@@ -32,8 +32,9 @@ interface ProductDetailModalProps {
   onClose: () => void;
 }
 
-export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product, onClose }) => {
-  const { designTemplates, addToCart, settings, inventory, showToast, isAdminLoggedIn, deleteProduct } = useStore();
+export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product: initialProduct, onClose }) => {
+  const { products, designTemplates, addToCart, settings, inventory, showToast, isAdminLoggedIn, deleteProduct } = useStore();
+  const [currentProduct, setCurrentProduct] = useState<Product | null>(initialProduct);
   const [selectedImageIdx, setSelectedImageIdx] = useState(0);
   const [selectedVariantOptions, setSelectedVariantOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
@@ -53,13 +54,15 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
 
   // Set initial state when opening product: always show the product's uploaded photos first!
   useEffect(() => {
+    setCurrentProduct(initialProduct);
     setSelectedDesign(null);
     setSelectedVariantOptions({});
     setQuantity(1);
     setSelectedImageIdx(0);
     setGalleryTab('product_images');
-  }, [product]);
+  }, [initialProduct]);
 
+  const product = currentProduct || initialProduct;
   if (!product) return null;
 
   const linkedItem = inventory.find(inv => inv.id === product.linkedInventoryId);
@@ -195,6 +198,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                   category={product.category}
                   activeImage={displayImage}
                   images={product.images}
+                  allProducts={products}
+                  currentProductId={product.id}
+                  onSelectProduct={(newP) => {
+                    setCurrentProduct(newP);
+                    setSelectedImageIdx(0);
+                    setSelectedDesign(null);
+                  }}
+                  onSelectImage={(imgUrl, idx) => {
+                    setSelectedImageIdx(idx);
+                    setSelectedDesign(null);
+                  }}
                 />
               ) : galleryTab === 'video' && product.videoUrl ? (
                 <ProductVideoPlayer videoUrl={product.videoUrl} title={product.name} />
@@ -210,6 +224,17 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                   <div className="absolute top-2.5 left-2.5 bg-slate-950/80 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md shadow-xs flex items-center gap-1.5 pointer-events-none">
                     {selectedDesign ? `Diseño: ${selectedDesign.title}` : `Foto ${selectedImageIdx + 1} de ${product.images?.length || 1}`}
                   </div>
+                  {/* Floating 360 quick button over 2D photo preview */}
+                  <button
+                    type="button"
+                    onClick={() => setGalleryTab('360')}
+                    className="absolute bottom-2.5 right-2.5 bg-slate-900/90 hover:bg-indigo-600 text-white text-[10px] sm:text-[11px] font-bold px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1.5 transition-all cursor-pointer border border-slate-700/80 hover:border-indigo-400 group z-10"
+                    title="Girar e interactuar con este producto en 3D 360°"
+                  >
+                    <RotateCw className="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-180 transition-transform duration-500" />
+                    <span>Ver en 360°</span>
+                  </button>
+
                   {isOutOfStock && (
                     <span className="absolute bottom-2.5 left-2.5 px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-bold shadow-xs pointer-events-none bg-rose-500 text-white">
                       Agotado
@@ -228,7 +253,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                   onClick={() => {
                     setSelectedImageIdx(idx);
                     setSelectedDesign(null);
-                    setGalleryTab('product_images');
+                    if (galleryTab === 'video') setGalleryTab('product_images');
                   }}
                   className={`relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 cursor-pointer ${
                     galleryTab === 'product_images' && !selectedDesign && selectedImageIdx === idx
