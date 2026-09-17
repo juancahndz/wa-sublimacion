@@ -194,6 +194,7 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product,
                   mockupType={product.mockupType}
                   category={product.category}
                   activeImage={displayImage}
+                  images={product.images}
                 />
               ) : galleryTab === 'video' && product.videoUrl ? (
                 <ProductVideoPlayer videoUrl={product.videoUrl} title={product.name} />

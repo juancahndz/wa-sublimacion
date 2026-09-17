@@ -17,6 +17,7 @@ interface Product360ViewerProps {
   mockupType?: ProductMockupType;
   category?: string;
   activeImage?: string;
+  images?: string[];
   initialBaseColor?: string;
   className?: string;
 }
@@ -35,6 +36,7 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
   mockupType = 'mug',
   category = '',
   activeImage,
+  images = [],
   initialBaseColor = '#FFFFFF',
   className = ''
 }) => {
@@ -43,6 +45,11 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
   const [baseColor, setBaseColor] = useState(initialBaseColor);
   const [isDragging, setIsDragging] = useState(false);
   const [showDragHint, setShowDragHint] = useState(true);
+
+  // Determine front & back image (e.g. for shirts: images[0] = frente, images[1] = revés/espalda)
+  const isCustomDesign = activeImage && (!images || !images.includes(activeImage));
+  const frontImage = isCustomDesign ? activeImage : (images && images.length > 0 ? images[0] : activeImage);
+  const backImage = images && images.length > 1 ? images[1] : null;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const dragStartXRef = useRef(0);
@@ -243,7 +250,7 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
 
               {/* Sublimation Wrap-Around Print Layer */}
               <div className="relative w-[92%] h-[82%] rounded-xl overflow-hidden flex items-center justify-center">
-                {activeImage ? (
+                {frontImage ? (
                   <div 
                     className="absolute inset-y-0 w-[240%] flex items-center justify-around pointer-events-none"
                     style={{
@@ -253,19 +260,19 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
                   >
                     {/* Repeated panoramic wrap for seamless 360° turn */}
                     <img 
-                      src={activeImage} 
+                      src={frontImage} 
                       alt={productName}
                       className="h-[80%] max-w-[130px] object-contain drop-shadow-md rounded-md shrink-0"
                       referrerPolicy="no-referrer"
                     />
                     <img 
-                      src={activeImage} 
+                      src={backImage || frontImage} 
                       alt={productName}
                       className="h-[80%] max-w-[130px] object-contain drop-shadow-md rounded-md shrink-0"
                       referrerPolicy="no-referrer"
                     />
                     <img 
-                      src={activeImage} 
+                      src={frontImage} 
                       alt={productName}
                       className="h-[80%] max-w-[130px] object-contain drop-shadow-md rounded-md shrink-0"
                       referrerPolicy="no-referrer"
@@ -305,7 +312,7 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
             >
               {/* Printed Artwork Wrap */}
               <div className="relative w-[90%] h-[80%] overflow-hidden flex items-center justify-center">
-                {activeImage && (
+                {frontImage && (
                   <div 
                     className="absolute inset-y-0 w-[240%] flex items-center justify-around pointer-events-none"
                     style={{
@@ -313,8 +320,8 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
                       transition: isDragging ? 'none' : 'transform 0.05s linear'
                     }}
                   >
-                    <img src={activeImage} alt="" className="h-[75%] max-w-[90px] object-contain rounded shrink-0" referrerPolicy="no-referrer" />
-                    <img src={activeImage} alt="" className="h-[75%] max-w-[90px] object-contain rounded shrink-0" referrerPolicy="no-referrer" />
+                    <img src={frontImage} alt="" className="h-[75%] max-w-[90px] object-contain rounded shrink-0" referrerPolicy="no-referrer" />
+                    <img src={backImage || frontImage} alt="" className="h-[75%] max-w-[90px] object-contain rounded shrink-0" referrerPolicy="no-referrer" />
                   </div>
                 )}
               </div>
@@ -353,9 +360,9 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
                 {/* Front Side View (0° to 90° and 270° to 360°) */}
                 {(angle <= 90 || angle >= 270) ? (
                   <div className="relative w-full h-full p-4 flex flex-col items-center justify-center">
-                    {activeImage ? (
+                    {frontImage ? (
                       <img 
-                        src={activeImage} 
+                        src={frontImage} 
                         alt={productName}
                         className="max-w-[75%] max-h-[75%] object-contain drop-shadow-md rounded-lg"
                         referrerPolicy="no-referrer"
@@ -367,17 +374,32 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
                       </div>
                     )}
                     <span className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mt-2">
-                      Frente (Estampado HD)
+                      Frente (0°)
                     </span>
                   </div>
                 ) : (
-                  /* Back Side View (90° to 270°) */
-                  <div className="relative w-full h-full p-4 flex flex-col items-center justify-center bg-slate-100/50">
-                    <div className="w-20 h-20 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs font-bold">
-                      Reverso
-                    </div>
+                  /* Back Side View (90° to 270°) with scaleX(-1) to fix mirroring */
+                  <div 
+                    className="relative w-full h-full p-4 flex flex-col items-center justify-center"
+                    style={{ transform: 'scaleX(-1)' }}
+                  >
+                    {backImage ? (
+                      <img 
+                        src={backImage} 
+                        alt={`${productName} - Reverso`}
+                        className="max-w-[75%] max-h-[75%] object-contain drop-shadow-md rounded-lg"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="text-center text-slate-400 text-xs">
+                        <div className="w-16 h-16 mx-auto mb-2 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs font-bold">
+                          Espalda
+                        </div>
+                        <span className="text-slate-400">Sin estampado posterior</span>
+                      </div>
+                    )}
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-2">
-                      Vista Posterior
+                      {backImage ? 'Espalda / Revés (180°)' : 'Vista Posterior (180°)'}
                     </span>
                   </div>
                 )}
