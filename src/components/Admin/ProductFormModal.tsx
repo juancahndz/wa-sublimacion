@@ -3,7 +3,6 @@ import { Product, ProductCategory, ProductMockupType, ProductVariant } from '../
 import { useStore } from '../../context/StoreContext';
 import { ArrowLeft, X, Plus, Trash2, Upload, Sparkles, Layers, Image as ImageIcon, Film } from 'lucide-react';
 import { compressImageFile } from '../../utils/imageCompressor';
-import { MultiAngleImageUploader } from './MultiAngleImageUploader';
 
 interface ProductFormModalProps {
   productToEdit?: Product | null;
@@ -44,6 +43,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
 
   const [newFeatureText, setNewFeatureText] = useState('');
   const [newTagText, setNewTagText] = useState('');
+  const [newImageUrl, setNewImageUrl] = useState('');
+  const [isCompressingImages, setIsCompressingImages] = useState(false);
 
   // Variant input helper
   const [newVarName, setNewVarName] = useState('');
@@ -110,6 +111,61 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
       ...prev,
       tags: prev.tags?.filter((_, i) => i !== idx)
     }));
+  };
+
+  const handleAddImageUrl = () => {
+    if (!newImageUrl.trim()) return;
+    setFormData(prev => ({
+      ...prev,
+      images: [...(prev.images || []), newImageUrl.trim()]
+    }));
+    setNewImageUrl('');
+    showToast("Imagen añadida por enlace.", "success");
+  };
+
+  const handleMultipleImageFiles = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      setIsCompressingImages(true);
+      const fileList = Array.from(files);
+      const compressedList = await Promise.all(
+        fileList.map(file => compressImageFile(file, 1200, 0.8))
+      );
+
+      setFormData(prev => ({
+        ...prev,
+        images: [...(prev.images || []), ...compressedList]
+      }));
+
+      showToast(`¡${compressedList.length} foto(s) cargada(s) con éxito!`, "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Error al procesar las imágenes.", "error");
+    } finally {
+      setIsCompressingImages(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveImage = (idxToRemove: number) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images?.filter((_, i) => i !== idxToRemove)
+    }));
+  };
+
+  const handleMoveImage = (idx: number, direction: 'left' | 'right') => {
+    setFormData(prev => {
+      const list = [...(prev.images || [])];
+      const targetIdx = direction === 'left' ? idx - 1 : idx + 1;
+      if (targetIdx < 0 || targetIdx >= list.length) return prev;
+      const temp = list[idx];
+      list[idx] = list[targetIdx];
+      list[targetIdx] = temp;
+      return { ...prev, images: list };
+    });
   };
 
   const handleAddVariant = () => {
@@ -367,14 +423,127 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
             />
           </div>
 
-          {/* Multi-Angle Guided Product Images (360° Studio) */}
-          <div>
-            <MultiAngleImageUploader
-              mockupType={formData.mockupType || 'mug'}
-              images={formData.images || []}
-              onChange={(newImgs) => setFormData(prev => ({ ...prev, images: newImgs }))}
-              showToast={showToast}
-            />
+          {/* Fotografías del Producto - Subida Rápida y Directa */}
+          <div className="space-y-3 bg-slate-50 p-4 sm:p-5 rounded-3xl border border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div>
+                <label className="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-1.5">
+                  <ImageIcon className="w-4 h-4 text-indigo-600" />
+                  <span>Fotografías del Producto (Frente, Espalda y Lados)</span>
+                </label>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Puedes seleccionar y subir todas las fotos del producto juntas. La 1ra foto será el <strong>Frente (0°)</strong> y la 2da foto la <strong>Espalda (180°)</strong> en el visor 360°.
+                </p>
+              </div>
+
+              <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 self-start sm:self-auto">
+                {formData.images?.length || 0} foto(s)
+              </span>
+            </div>
+
+            {/* Botón Principal para Seleccionar Todas las Fotos a la Vez */}
+            <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-indigo-300 hover:border-indigo-500 bg-indigo-50/40 hover:bg-indigo-50/70 rounded-2xl cursor-pointer transition-all group">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-2 group-hover:scale-110 shadow-sm transition-transform">
+                <Upload className="w-6 h-6" />
+              </div>
+              <span className="text-xs sm:text-sm font-bold text-indigo-950">
+                {isCompressingImages ? "Optimizando y cargando fotos..." : "📁 Seleccionar todas las fotos del producto"}
+              </span>
+              <span className="text-[11px] text-slate-500 mt-0.5 text-center">
+                Toca aquí para elegir 1, 2, 3 o todas las fotos juntas desde tu dispositivo
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                disabled={isCompressingImages}
+                onChange={handleMultipleImageFiles}
+                className="hidden"
+              />
+            </label>
+
+            {/* Opción de Pegar Enlace URL */}
+            <div className="flex gap-2">
+              <input
+                type="url"
+                placeholder="O pega un enlace de imagen directa (https://...)"
+                value={newImageUrl}
+                onChange={e => setNewImageUrl(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddImageUrl(); } }}
+                className="flex-1 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={handleAddImageUrl}
+                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0"
+              >
+                + Añadir URL
+              </button>
+            </div>
+
+            {/* Cuadrícula de Fotos Subidas */}
+            {formData.images && formData.images.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-slate-200">
+                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">
+                  Fotos listas para publicar ({formData.images.length}):
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                  {formData.images.map((img, idx) => {
+                    const isFront = idx === 0;
+                    const isBack = idx === 1;
+                    return (
+                      <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-200 bg-white shadow-xs group">
+                        <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        
+                        {/* Etiqueta de Ángulo */}
+                        <span className={`absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold shadow-xs ${
+                          isFront 
+                            ? 'bg-indigo-600 text-white' 
+                            : isBack 
+                            ? 'bg-purple-600 text-white' 
+                            : 'bg-slate-900/80 text-slate-200'
+                        }`}>
+                          {isFront ? '1. Frente (0°)' : isBack ? '2. Espalda (180°)' : `Foto #${idx + 1}`}
+                        </span>
+
+                        {/* Botón Eliminar */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(idx)}
+                          className="absolute top-1.5 right-1.5 p-1 rounded-full bg-rose-600 text-white hover:bg-rose-700 shadow-md transition-transform hover:scale-110 cursor-pointer"
+                          title="Eliminar foto"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+
+                        {/* Botones para Mover Orden */}
+                        <div className="absolute bottom-1.5 inset-x-1.5 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 p-1 rounded-lg backdrop-blur-2xs">
+                          <button
+                            type="button"
+                            disabled={idx === 0}
+                            onClick={() => handleMoveImage(idx, 'left')}
+                            className="text-white text-[10px] font-bold px-1.5 py-0.5 rounded hover:bg-white/20 disabled:opacity-30 cursor-pointer"
+                            title="Mover a la izquierda (cambiar orden)"
+                          >
+                            ◀
+                          </button>
+                          <span className="text-[9px] text-slate-300 font-mono">#{idx + 1}</span>
+                          <button
+                            type="button"
+                            disabled={idx === (formData.images?.length || 1) - 1}
+                            onClick={() => handleMoveImage(idx, 'right')}
+                            className="text-white text-[10px] font-bold px-1.5 py-0.5 rounded hover:bg-white/20 disabled:opacity-30 cursor-pointer"
+                            title="Mover a la derecha (cambiar orden)"
+                          >
+                            ▶
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Product Video (Optional) */}
