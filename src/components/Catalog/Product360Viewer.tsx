@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Product, ProductMockupType } from '../../types';
+import { ProductMockupType } from '../../types';
 import { 
   RotateCw, 
   Play, 
@@ -8,10 +8,7 @@ import {
   Sparkles, 
   Hand, 
   Palette,
-  Eye,
   Check,
-  Package,
-  Layers,
   Image as ImageIcon
 } from 'lucide-react';
 
@@ -23,9 +20,6 @@ interface Product360ViewerProps {
   images?: string[];
   initialBaseColor?: string;
   className?: string;
-  allProducts?: Product[];
-  currentProductId?: string;
-  onSelectProduct?: (product: Product) => void;
   onSelectImage?: (imgUrl: string, index: number) => void;
 }
 
@@ -46,9 +40,6 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
   images = [],
   initialBaseColor = '#FFFFFF',
   className = '',
-  allProducts = [],
-  currentProductId,
-  onSelectProduct,
   onSelectImage
 }) => {
   const [angle, setAngle] = useState(0);
@@ -57,13 +48,17 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [showDragHint, setShowDragHint] = useState(true);
 
-  // The activeImage passed by the user is the primary image they want to see on the 3D model!
-  const frontImage = activeImage || (images && images.length > 0 ? images[0] : '');
+  // Strictly use images for this product only
+  const productImages = (images && images.length > 0)
+    ? images
+    : (activeImage ? [activeImage] : []);
+
+  const frontImage = activeImage || (productImages.length > 0 ? productImages[0] : '');
   
-  // Back image: if activeImage is images[0], back is images[1]. If activeImage is images[1], back is images[0].
-  const backImage = (images && images.length > 1)
-    ? (frontImage === images[1] ? images[0] : images[1])
-    : null;
+  // Back image is only defined if 2 or more photos were uploaded
+  const backImage = productImages.length > 1
+    ? (frontImage === productImages[1] ? productImages[0] : productImages[1])
+    : '';
 
   const containerRef = useRef<HTMLDivElement>(null);
   const dragStartXRef = useRef(0);
@@ -151,13 +146,13 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
     return 'Vista Frontal';
   };
 
-  // Cylindrical calculations for Mugs & Bottles
+  // 3D Trigonometry for cylindrical items
   const rad = (angle * Math.PI) / 180;
+  const frontVisibility = Math.cos(rad);
+  const backVisibility = -frontVisibility;
   const handleX = Math.cos(rad);
   const handleZ = Math.sin(rad);
   const isHandleInFront = handleZ > 0;
-  
-  const artworkOffsetPercent = ((angle % 360) / 360) * 100;
 
   return (
     <div 
@@ -264,37 +259,46 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
               {/* Inner Rim Top */}
               <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-b from-slate-900/30 to-transparent z-20 pointer-events-none" />
 
-              {/* Sublimation Wrap-Around Print Layer */}
-              <div className="relative w-[92%] h-[82%] rounded-xl overflow-hidden flex items-center justify-center">
-                {frontImage ? (
+              {/* Sublimation Print Layer (Front & Back accurate curved 3D placement) */}
+              <div className="relative w-[90%] h-[80%] rounded-xl overflow-hidden flex items-center justify-center pointer-events-none">
+                
+                {/* Front Photo (0°) */}
+                {frontImage && frontVisibility > -0.15 && (
                   <div 
-                    className="absolute inset-y-0 w-[240%] flex items-center justify-around pointer-events-none"
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none transition-transform duration-75"
                     style={{
-                      transform: `translateX(${-artworkOffsetPercent * 0.8 + 20}%)`,
-                      transition: isDragging ? 'none' : 'transform 0.05s linear'
+                      transform: `translateX(${Math.sin(rad) * 45}px) scaleX(${Math.max(0.01, frontVisibility)})`,
+                      opacity: Math.max(0, Math.min(1, frontVisibility * 1.5))
                     }}
                   >
-                    {/* Repeated panoramic wrap for seamless 360° turn */}
                     <img 
                       src={frontImage} 
                       alt={productName}
-                      className="h-[80%] max-w-[130px] object-contain drop-shadow-md rounded-md shrink-0"
-                      referrerPolicy="no-referrer"
-                    />
-                    <img 
-                      src={backImage || frontImage} 
-                      alt={productName}
-                      className="h-[80%] max-w-[130px] object-contain drop-shadow-md rounded-md shrink-0"
-                      referrerPolicy="no-referrer"
-                    />
-                    <img 
-                      src={frontImage} 
-                      alt={productName}
-                      className="h-[80%] max-w-[130px] object-contain drop-shadow-md rounded-md shrink-0"
+                      className="max-h-[85%] max-w-[85%] object-contain drop-shadow-md rounded-md"
                       referrerPolicy="no-referrer"
                     />
                   </div>
-                ) : (
+                )}
+
+                {/* Back Photo (180°) - Strictly rendered ONLY if back photo exists */}
+                {backImage && backVisibility > -0.15 && (
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none transition-transform duration-75"
+                    style={{
+                      transform: `translateX(${Math.sin(rad) * 45}px) scaleX(${Math.max(0.01, backVisibility)})`,
+                      opacity: Math.max(0, Math.min(1, backVisibility * 1.5))
+                    }}
+                  >
+                    <img 
+                      src={backImage} 
+                      alt={`${productName} - Reverso`}
+                      className="max-h-[85%] max-w-[85%] object-contain drop-shadow-md rounded-md"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                )}
+
+                {!frontImage && (
                   <div className="text-center p-2 text-slate-400 text-xs">
                     <Sparkles className="w-6 h-6 mx-auto mb-1 text-indigo-400" />
                     <span>Área de Sublimación</span>
@@ -327,17 +331,31 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
               style={{ backgroundColor: baseColor }}
             >
               {/* Printed Artwork Wrap */}
-              <div className="relative w-[90%] h-[80%] overflow-hidden flex items-center justify-center">
-                {frontImage && (
+              <div className="relative w-[88%] h-[78%] overflow-hidden flex items-center justify-center pointer-events-none">
+                
+                {/* Front Photo */}
+                {frontImage && frontVisibility > -0.15 && (
                   <div 
-                    className="absolute inset-y-0 w-[240%] flex items-center justify-around pointer-events-none"
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none transition-transform duration-75"
                     style={{
-                      transform: `translateX(${-artworkOffsetPercent * 0.8 + 20}%)`,
-                      transition: isDragging ? 'none' : 'transform 0.05s linear'
+                      transform: `translateX(${Math.sin(rad) * 35}px) scaleX(${Math.max(0.01, frontVisibility)})`,
+                      opacity: Math.max(0, Math.min(1, frontVisibility * 1.5))
                     }}
                   >
-                    <img src={frontImage} alt="" className="h-[75%] max-w-[90px] object-contain rounded shrink-0" referrerPolicy="no-referrer" />
-                    <img src={backImage || frontImage} alt="" className="h-[75%] max-w-[90px] object-contain rounded shrink-0" referrerPolicy="no-referrer" />
+                    <img src={frontImage} alt="" className="max-h-[80%] max-w-[80%] object-contain rounded drop-shadow-sm" referrerPolicy="no-referrer" />
+                  </div>
+                )}
+
+                {/* Back Photo - strictly only if uploaded */}
+                {backImage && backVisibility > -0.15 && (
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none transition-transform duration-75"
+                    style={{
+                      transform: `translateX(${Math.sin(rad) * 35}px) scaleX(${Math.max(0.01, backVisibility)})`,
+                      opacity: Math.max(0, Math.min(1, backVisibility * 1.5))
+                    }}
+                  >
+                    <img src={backImage} alt="" className="max-h-[80%] max-w-[80%] object-contain rounded drop-shadow-sm" referrerPolicy="no-referrer" />
                   </div>
                 )}
               </div>
@@ -374,7 +392,7 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
                 style={{ backgroundColor: baseColor }}
               >
                 {/* Front Side View (0° to 90° and 270° to 360°) */}
-                {(angle <= 90 || angle >= 270) ? (
+                {(angle % 360 <= 90 || angle % 360 >= 270) ? (
                   <div className="relative w-full h-full p-4 flex flex-col items-center justify-center">
                     {frontImage ? (
                       <img 
@@ -411,7 +429,7 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
                         <div className="w-16 h-16 mx-auto mb-2 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs font-bold">
                           Espalda
                         </div>
-                        <span className="text-slate-400">Sin estampado posterior</span>
+                        <span className="text-slate-400">Sin foto de reverso</span>
                       </div>
                     )}
                     <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-2">
@@ -441,15 +459,15 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
       {/* Bottom Control Bar: Photos by Angle, Quick Angles & Color Selector */}
       <div className="relative z-20 p-2 sm:p-2.5 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 space-y-2">
         
-        {/* Row 1: Photos by angle (if multiple images available) */}
-        {images && images.length > 1 && (
+        {/* Row 1: Photos by angle (if multiple images uploaded for this product) */}
+        {productImages && productImages.length > 1 && (
           <div className="flex items-center gap-1.5 pb-1.5 border-b border-slate-800/80 overflow-x-auto scrollbar-none">
             <span className="text-[10px] font-bold text-slate-400 shrink-0 flex items-center gap-1 pl-1">
               <ImageIcon className="w-3 h-3 text-cyan-400" />
               <span>Foto:</span>
             </span>
             <div className="flex items-center gap-1 flex-1 overflow-x-auto scrollbar-none">
-              {images.map((img, idx) => {
+              {productImages.map((img, idx) => {
                 const isCurrent = frontImage === img;
                 const slotLabels = ['1. Frente (0°)', '2. Espalda (180°)', '3. Lateral (90°)', '4. Detalle'];
                 return (
@@ -458,6 +476,13 @@ export const Product360Viewer: React.FC<Product360ViewerProps> = ({
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (idx === 1) {
+                        setPresetAngle(180);
+                      } else if (idx === 2) {
+                        setPresetAngle(90);
+                      } else if (idx === 0) {
+                        setPresetAngle(0);
+                      }
                       if (onSelectImage) {
                         onSelectImage(img, idx);
                       }

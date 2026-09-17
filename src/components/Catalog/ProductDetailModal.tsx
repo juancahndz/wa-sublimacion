@@ -197,15 +197,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({ product:
                   productName={product.name}
                   mockupType={product.mockupType}
                   category={product.category}
-                  activeImage={displayImage}
+                  activeImage={product.images[selectedImageIdx] || product.images[0]}
                   images={product.images}
-                  allProducts={products}
-                  currentProductId={product.id}
-                  onSelectProduct={(newP) => {
-                    setCurrentProduct(newP);
-                    setSelectedImageIdx(0);
-                    setSelectedDesign(null);
-                  }}
                   onSelectImage={(imgUrl, idx) => {
                     setSelectedImageIdx(idx);
                     setSelectedDesign(null);
