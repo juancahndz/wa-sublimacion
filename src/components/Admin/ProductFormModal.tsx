@@ -113,6 +113,28 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
     }));
   };
 
+  const handleSlotImageFile = async (slotIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsCompressingImages(true);
+      const compressed = await compressImageFile(file, 1200, 0.85);
+      setFormData(prev => {
+        const list = [...(prev.images || [])];
+        list[slotIndex] = compressed;
+        return { ...prev, images: list.filter(Boolean) };
+      });
+      showToast(slotIndex === 0 ? "Foto del FRENTE cargada con éxito." : "Foto de la ESPALDA (360°) cargada con éxito.", "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Error al procesar la imagen.", "error");
+    } finally {
+      setIsCompressingImages(false);
+      e.target.value = '';
+    }
+  };
+
   const handleAddImageUrl = () => {
     if (!newImageUrl.trim()) return;
     setFormData(prev => ({
@@ -423,121 +445,193 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
             />
           </div>
 
-          {/* Fotografías del Producto - Subida Rápida y Directa */}
-          <div className="space-y-3 bg-slate-50 p-4 sm:p-5 rounded-3xl border border-slate-200">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          {/* Fotografías del Producto - Subida por Lados (Frente y Espalda para vista 360°) */}
+          <div className="space-y-4 bg-slate-50 p-4 sm:p-5 rounded-3xl border border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
               <div>
                 <label className="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-1.5">
                   <ImageIcon className="w-4 h-4 text-indigo-600" />
-                  <span>Fotografías del Producto</span>
+                  <span>Fotos del Producto (Frente y Parte de Atrás para 360°)</span>
                 </label>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Puedes seleccionar y subir todas las fotos del producto (frente, reverso, detalles).
+                  Sube la foto del <strong>frente</strong> y la foto de la <strong>parte de atrás</strong> de la camisa o producto para activar la vista 360°.
                 </p>
               </div>
 
               <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 self-start sm:self-auto">
-                {formData.images?.length || 0} foto(s)
+                {formData.images?.length || 0} foto(s) cargada(s)
               </span>
             </div>
 
-            {/* Botón Principal para Seleccionar Todas las Fotos a la Vez */}
-            <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-indigo-300 hover:border-indigo-500 bg-indigo-50/40 hover:bg-indigo-50/70 rounded-2xl cursor-pointer transition-all group">
-              <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-2 group-hover:scale-110 shadow-sm transition-transform">
-                <Upload className="w-6 h-6" />
+            {/* Dos Cajas Principales: FRENTE y ESPALDA */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              {/* CAJA 1: FOTO DEL FRENTE */}
+              <div className="bg-white p-3.5 rounded-2xl border-2 border-indigo-200 shadow-xs flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    1. Foto del Frente (0°) *
+                  </span>
+                  {formData.images?.[0] && (
+                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
+                      ✓ Cargada
+                    </span>
+                  )}
+                </div>
+
+                {formData.images?.[0] ? (
+                  <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group">
+                    <img src={formData.images[0]} alt="Frente" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(0)}
+                      className="absolute top-2 right-2 p-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-md cursor-pointer transition-transform hover:scale-110"
+                      title="Eliminar foto del frente"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                    <label className="absolute bottom-2 inset-x-2 py-1.5 bg-slate-900/90 hover:bg-indigo-600 text-white text-center text-[10px] font-bold rounded-lg cursor-pointer transition-colors shadow">
+                      <span>Cambiar foto del frente</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleSlotImageFile(0, e)}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-indigo-300 hover:border-indigo-500 bg-indigo-50/40 hover:bg-indigo-50/80 rounded-xl cursor-pointer transition-all aspect-4/3 text-center group">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-1.5 group-hover:scale-110 shadow-xs transition-transform">
+                      <Upload className="w-5 h-5" />
+                    </div>
+                    <span className="text-xs font-bold text-indigo-950">Subir Foto del Frente</span>
+                    <span className="text-[10px] text-slate-500 mt-0.5">Toca aquí para elegir foto frontal</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleSlotImageFile(0, e)}
+                      className="hidden"
+                    />
+                  </label>
+                )}
               </div>
-              <span className="text-xs sm:text-sm font-bold text-indigo-950">
-                {isCompressingImages ? "Optimizando y cargando fotos..." : "📁 Seleccionar todas las fotos del producto"}
-              </span>
-              <span className="text-[11px] text-slate-500 mt-0.5 text-center">
-                Toca aquí para elegir 1, 2, 3 o todas las fotos juntas desde tu dispositivo
-              </span>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                disabled={isCompressingImages}
-                onChange={handleMultipleImageFiles}
-                className="hidden"
-              />
-            </label>
 
-            {/* Opción de Pegar Enlace URL */}
-            <div className="flex gap-2">
-              <input
-                type="url"
-                placeholder="O pega un enlace de imagen directa (https://...)"
-                value={newImageUrl}
-                onChange={e => setNewImageUrl(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddImageUrl(); } }}
-                className="flex-1 px-3.5 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={handleAddImageUrl}
-                className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0"
-              >
-                + Añadir URL
-              </button>
+              {/* CAJA 2: FOTO DE LA ESPALDA / PARTE DE ATRÁS */}
+              <div className="bg-white p-3.5 rounded-2xl border-2 border-purple-200 shadow-xs flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-purple-900 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-purple-500" />
+                    2. Foto de la Espalda / Atrás (180°)
+                  </span>
+                  {formData.images?.[1] ? (
+                    <span className="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full">
+                      ✓ Lista para 360°
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+                      Opcional
+                    </span>
+                  )}
+                </div>
+
+                {formData.images?.[1] ? (
+                  <div className="relative aspect-4/3 rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group">
+                    <img src={formData.images[1]} alt="Espalda" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(1)}
+                      className="absolute top-2 right-2 p-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full shadow-md cursor-pointer transition-transform hover:scale-110"
+                      title="Eliminar foto de la espalda"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                    <label className="absolute bottom-2 inset-x-2 py-1.5 bg-slate-900/90 hover:bg-purple-600 text-white text-center text-[10px] font-bold rounded-lg cursor-pointer transition-colors shadow">
+                      <span>Cambiar foto de la espalda</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleSlotImageFile(1, e)}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-purple-300 hover:border-purple-500 bg-purple-50/40 hover:bg-purple-50/80 rounded-xl cursor-pointer transition-all aspect-4/3 text-center group">
+                    <div className="w-10 h-10 rounded-xl bg-purple-600 text-white flex items-center justify-center mb-1.5 group-hover:scale-110 shadow-xs transition-transform">
+                      <Upload className="w-5 h-5" />
+                    </div>
+                    <span className="text-xs font-bold text-purple-950">Subir Foto de Atrás / Espalda</span>
+                    <span className="text-[10px] text-slate-500 mt-0.5">Para ver la camisa girando en 360°</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleSlotImageFile(1, e)}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+
             </div>
 
-            {/* Cuadrícula de Fotos Subidas */}
-            {formData.images && formData.images.length > 0 && (
-              <div className="space-y-2 pt-2 border-t border-slate-200">
-                <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider block">
-                  Fotos listas para publicar ({formData.images.length}):
-                </span>
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3">
-                  {formData.images.map((img, idx) => {
-                    const isFront = idx === 0;
-                    const isBack = idx === 1;
-                    return (
-                      <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden border-2 border-slate-200 bg-white shadow-xs group">
-                        <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                        
-                        {/* Etiqueta de Ángulo */}
-                        <span className={`absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold shadow-xs ${
-                          isFront 
-                            ? 'bg-indigo-600 text-white' 
-                            : isBack 
-                            ? 'bg-purple-600 text-white' 
-                            : 'bg-slate-900/80 text-slate-200'
-                        }`}>
-                          {isFront ? '1. Frente (0°)' : isBack ? '2. Espalda (180°)' : `Foto #${idx + 1}`}
-                        </span>
+            {/* Opciones Adicionales: Subir todas de golpe o pegar URL */}
+            <div className="pt-2 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+              <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold cursor-pointer transition-colors">
+                <Upload className="w-3.5 h-3.5 text-indigo-600" />
+                <span>📁 Seleccionar múltiples fotos de golpe</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  disabled={isCompressingImages}
+                  onChange={handleMultipleImageFiles}
+                  className="hidden"
+                />
+              </label>
 
-                        {/* Botón Eliminar */}
+              <div className="flex items-center gap-2 flex-1 sm:max-w-xs">
+                <input
+                  type="url"
+                  placeholder="O pegar URL de imagen..."
+                  value={newImageUrl}
+                  onChange={e => setNewImageUrl(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleAddImageUrl(); } }}
+                  className="flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddImageUrl}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0"
+                >
+                  + URL
+                </button>
+              </div>
+            </div>
+
+            {/* Cuadrícula de Todas las Fotos Subidas si hay más de 2 */}
+            {formData.images && formData.images.length > 2 && (
+              <div className="space-y-1.5 pt-2 border-t border-slate-200">
+                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider block">
+                  Fotos adicionales / detalles ({formData.images.length - 2}):
+                </span>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                  {formData.images.slice(2).map((img, idx) => {
+                    const realIdx = idx + 2;
+                    return (
+                      <div key={realIdx} className="relative aspect-square rounded-xl overflow-hidden border border-slate-200 bg-white group">
+                        <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        <span className="absolute top-1 left-1 bg-slate-900/80 text-white text-[8px] font-bold px-1 rounded">
+                          #{realIdx + 1}
+                        </span>
                         <button
                           type="button"
-                          onClick={() => handleRemoveImage(idx)}
-                          className="absolute top-1.5 right-1.5 p-1 rounded-full bg-rose-600 text-white hover:bg-rose-700 shadow-md transition-transform hover:scale-110 cursor-pointer"
-                          title="Eliminar foto"
+                          onClick={() => handleRemoveImage(realIdx)}
+                          className="absolute top-1 right-1 p-0.5 bg-rose-600 text-white rounded-full hover:scale-110 cursor-pointer"
                         >
-                          <X className="w-3.5 h-3.5" />
+                          <X className="w-2.5 h-2.5" />
                         </button>
-
-                        {/* Botones para Mover Orden */}
-                        <div className="absolute bottom-1.5 inset-x-1.5 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity bg-black/70 p-1 rounded-lg backdrop-blur-2xs">
-                          <button
-                            type="button"
-                            disabled={idx === 0}
-                            onClick={() => handleMoveImage(idx, 'left')}
-                            className="text-white text-[10px] font-bold px-1.5 py-0.5 rounded hover:bg-white/20 disabled:opacity-30 cursor-pointer"
-                            title="Mover a la izquierda (cambiar orden)"
-                          >
-                            ◀
-                          </button>
-                          <span className="text-[9px] text-slate-300 font-mono">#{idx + 1}</span>
-                          <button
-                            type="button"
-                            disabled={idx === (formData.images?.length || 1) - 1}
-                            onClick={() => handleMoveImage(idx, 'right')}
-                            className="text-white text-[10px] font-bold px-1.5 py-0.5 rounded hover:bg-white/20 disabled:opacity-30 cursor-pointer"
-                            title="Mover a la derecha (cambiar orden)"
-                          >
-                            ▶
-                          </button>
-                        </div>
                       </div>
                     );
                   })}
