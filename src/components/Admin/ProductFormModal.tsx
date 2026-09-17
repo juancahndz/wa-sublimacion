@@ -3,6 +3,7 @@ import { Product, ProductCategory, ProductMockupType, ProductVariant } from '../
 import { useStore } from '../../context/StoreContext';
 import { ArrowLeft, X, Plus, Trash2, Upload, Sparkles, Layers, Image as ImageIcon, Film } from 'lucide-react';
 import { compressImageFile } from '../../utils/imageCompressor';
+import { MultiAngleImageUploader } from './MultiAngleImageUploader';
 
 interface ProductFormModalProps {
   productToEdit?: Product | null;
@@ -43,7 +44,6 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
 
   const [newFeatureText, setNewFeatureText] = useState('');
   const [newTagText, setNewTagText] = useState('');
-  const [newImageUrl, setNewImageUrl] = useState('');
 
   // Variant input helper
   const [newVarName, setNewVarName] = useState('');
@@ -110,42 +110,6 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
       ...prev,
       tags: prev.tags?.filter((_, i) => i !== idx)
     }));
-  };
-
-  const handleAddImage = () => {
-    if (!newImageUrl.trim()) return;
-    setFormData(prev => {
-      const currentImages = prev.images || [];
-      const isDefaultOnly = currentImages.length === 1 && currentImages[0].includes('photo-1514432324607');
-      const filtered = isDefaultOnly ? [] : currentImages;
-      return {
-        ...prev,
-        images: [...filtered, newImageUrl.trim()]
-      };
-    });
-    setNewImageUrl('');
-  };
-
-  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files);
-      const readPromises = fileArray.map(file => compressImageFile(file, 1000, 0.75));
-
-      Promise.all(readPromises).then(newUrls => {
-        setFormData(prev => {
-          const currentImages = prev.images || [];
-          const isDefaultOnly = currentImages.length === 1 && currentImages[0].includes('photo-1514432324607');
-          const base = isDefaultOnly ? [] : currentImages;
-          return {
-            ...prev,
-            images: [...newUrls, ...base]
-          };
-        });
-        showToast(`${newUrls.length} imagen(es) optimizada(s) y cargada(s).`, "success");
-      });
-      e.target.value = '';
-    }
   };
 
   const handleAddVariant = () => {
@@ -403,51 +367,14 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
             />
           </div>
 
-          {/* Images */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-700 block">Fotografías del Producto</label>
-            <div className="flex gap-2">
-              <input
-                type="url"
-                placeholder="Pegar URL de imagen (https://...)"
-                value={newImageUrl}
-                onChange={e => setNewImageUrl(e.target.value)}
-                className="flex-1 px-3 py-1.5 border border-slate-300 rounded-xl text-xs"
-              />
-              <button
-                type="button"
-                onClick={handleAddImage}
-                className="px-3 py-1.5 bg-slate-800 text-white rounded-xl text-xs font-semibold"
-              >
-                Agregar URL
-              </button>
-            </div>
-
-            <div>
-              <label className="text-[11px] text-slate-500 block mb-1">O sube desde tu dispositivo:</label>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleImageFileUpload}
-                className="text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-50 file:text-indigo-700 file:font-semibold cursor-pointer"
-              />
-            </div>
-
-            <div className="flex gap-2 overflow-x-auto pt-2">
-              {formData.images?.map((img, idx) => (
-                <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-300 shrink-0">
-                  <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, images: prev.images?.filter((_, i) => i !== idx) }))}
-                    className="absolute top-0.5 right-0.5 bg-rose-600 text-white p-0.5 rounded-full"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
+          {/* Multi-Angle Guided Product Images (360° Studio) */}
+          <div>
+            <MultiAngleImageUploader
+              mockupType={formData.mockupType || 'mug'}
+              images={formData.images || []}
+              onChange={(newImgs) => setFormData(prev => ({ ...prev, images: newImgs }))}
+              showToast={showToast}
+            />
           </div>
 
           {/* Product Video (Optional) */}
