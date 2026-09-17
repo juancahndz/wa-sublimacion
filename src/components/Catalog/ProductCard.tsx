@@ -83,19 +83,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onQuickView, 
         </span>
 
         {/* Badges bar */}
-        <div className="absolute bottom-3 left-3 flex items-center gap-1.5 z-10">
-          <span className="bg-slate-900/90 text-cyan-300 backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-bold border border-cyan-500/30 flex items-center gap-1 shadow-xs">
-            <RotateCw className="w-2.5 h-2.5 text-cyan-400 animate-spin-slow" />
-            <span>360°</span>
-          </span>
-
-          {product.videoUrl && (
+        {product.videoUrl && (
+          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 z-10">
             <span className="bg-slate-900/90 text-indigo-300 backdrop-blur-xs px-2 py-0.5 rounded text-[9px] font-bold border border-indigo-500/30 flex items-center gap-1 shadow-xs">
               <Film className="w-2.5 h-2.5 text-indigo-400" />
               <span>Video</span>
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         {isOutOfStock && (
           <span className="absolute bottom-3 right-3 px-2 py-1 rounded text-[10px] font-bold bg-rose-500 text-white">

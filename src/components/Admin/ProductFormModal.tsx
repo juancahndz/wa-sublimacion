@@ -429,10 +429,10 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({ productToEdi
               <div>
                 <label className="text-xs sm:text-sm font-bold text-slate-800 flex items-center gap-1.5">
                   <ImageIcon className="w-4 h-4 text-indigo-600" />
-                  <span>Fotografías del Producto (Frente, Espalda y Lados)</span>
+                  <span>Fotografías del Producto</span>
                 </label>
                 <p className="text-[11px] text-slate-500 mt-0.5">
-                  Puedes seleccionar y subir todas las fotos del producto juntas. La 1ra foto será el <strong>Frente (0°)</strong> y la 2da foto la <strong>Espalda (180°)</strong> en el visor 360°.
+                  Puedes seleccionar y subir todas las fotos del producto (frente, reverso, detalles).
                 </p>
               </div>
 
