@@ -13,7 +13,8 @@ import {
   X,
   Layers,
   Shirt,
-  HelpCircle
+  HelpCircle,
+  Image as ImageIcon
 } from 'lucide-react';
 
 export interface AngleSlotConfig {
@@ -40,32 +41,32 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
       return [
         {
           angleDegree: 0,
-          label: 'Frente (0°)',
+          label: '1. Frente (0°)',
           badge: 'Frente Principal',
           badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
           description: 'Foto frontal de la prenda con el estampado principal.',
-          placeholderText: 'Subir Foto del Frente'
+          placeholderText: 'Subir Foto Frente'
         },
         {
           angleDegree: 180,
-          label: 'Espalda / Revés (180°)',
-          badge: 'Reverso 360°',
+          label: '2. Espalda / Revés (180°)',
+          badge: 'Espalda 360°',
           badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
           description: 'Foto trasera de la prenda (espalda o revés).',
-          placeholderText: 'Subir Foto de la Espalda'
+          placeholderText: 'Subir Foto Espalda'
         },
         {
           angleDegree: 90,
-          label: 'Lateral / Manga (90°)',
-          badge: 'Lateral / Perfil',
+          label: '3. Lateral / Manga (90°)',
+          badge: 'Lateral / Manga',
           badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
           description: 'Vista de costado, manga o detalle de costura.',
           placeholderText: 'Subir Foto Lateral'
         },
         {
           angleDegree: 45,
-          label: 'En Modelo / Puesta',
-          badge: 'Demostración',
+          label: '4. En Modelo / Puesta',
+          badge: 'Puesta / En Uso',
           badgeColor: 'bg-amber-50 text-amber-700 border-amber-200',
           description: 'Fotografía puesta en modelo o en contexto.',
           placeholderText: 'Subir Foto en Modelo'
@@ -76,7 +77,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
       return [
         {
           angleDegree: 0,
-          label: 'Frente / Diseño (0°)',
+          label: '1. Frente / Diseño (0°)',
           badge: 'Frente Principal',
           badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
           description: 'Diseño frontal centrado o vista frontal.',
@@ -84,15 +85,15 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 90,
-          label: 'Lado Derecho / Asa (90°)',
-          badge: 'Giro 360° Asa',
+          label: '2. Lado Derecho / Asa (90°)',
+          badge: 'Lado del Asa',
           badgeColor: 'bg-cyan-50 text-cyan-700 border-cyan-200',
           description: 'Perspectiva con el asa a la derecha.',
           placeholderText: 'Subir Lado del Asa'
         },
         {
           angleDegree: 180,
-          label: 'Reverso (180°)',
+          label: '3. Reverso (180°)',
           badge: 'Vista Posterior',
           badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
           description: 'Parte trasera de la taza o diseño continuo.',
@@ -100,7 +101,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 270,
-          label: 'Plantilla Plana / Lado Izq.',
+          label: '4. Plantilla Plana / Lado Izq.',
           badge: 'Plantilla HD',
           badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
           description: 'Plantilla extendida plana o perspectiva izquierda.',
@@ -112,7 +113,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
       return [
         {
           angleDegree: 0,
-          label: 'Frente (0°)',
+          label: '1. Frente (0°)',
           badge: 'Frente Principal',
           badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
           description: 'Vista frontal con estampado de la botella/termo.',
@@ -120,7 +121,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 180,
-          label: 'Reverso / Espalda (180°)',
+          label: '2. Reverso / Espalda (180°)',
           badge: 'Reverso 360°',
           badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
           description: 'Vista trasera del cilindro o termo.',
@@ -128,15 +129,15 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 90,
-          label: 'Detalle de Tapa / Boquilla',
-          badge: 'Detalle Superior',
+          label: '3. Detalle de Tapa / Boquilla',
+          badge: 'Detalle Tapa',
           badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
           description: 'Enfoque en la tapa hermética o boquilla.',
           placeholderText: 'Subir Detalle de Tapa'
         },
         {
           angleDegree: 45,
-          label: 'En Contexto / Uso',
+          label: '4. En Contexto / Uso',
           badge: 'Publicitaria',
           badgeColor: 'bg-amber-50 text-amber-700 border-amber-200',
           description: 'Fotografía en gimnasio, oficina o exteriores.',
@@ -148,7 +149,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
       return [
         {
           angleDegree: 0,
-          label: 'Frente / Corona (0°)',
+          label: '1. Frente / Corona (0°)',
           badge: 'Frente Principal',
           badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
           description: 'Estampado o bordado en la corona frontal.',
@@ -156,7 +157,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 90,
-          label: 'Perfil Lateral (90°)',
+          label: '2. Perfil Lateral (90°)',
           badge: 'Lateral',
           badgeColor: 'bg-cyan-50 text-cyan-700 border-cyan-200',
           description: 'Vista del costado de la gorra.',
@@ -164,7 +165,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 180,
-          label: 'Reverso / Cierre (180°)',
+          label: '3. Reverso / Cierre (180°)',
           badge: 'Broche Posterior',
           badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
           description: 'Hebilla, broche o malla trasera.',
@@ -172,8 +173,8 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 45,
-          label: 'Visera / Superior',
-          badge: 'Detalle',
+          label: '4. Visera / Superior',
+          badge: 'Detalle Visera',
           badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200',
           description: 'Vista cenital o detalle de la visera.',
           placeholderText: 'Subir Ángulo Superior'
@@ -184,7 +185,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
       return [
         {
           angleDegree: 0,
-          label: 'Frente (0°)',
+          label: '1. Frente (0°)',
           badge: 'Frente Principal',
           badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
           description: 'Estampado frontal del cojín o almohada.',
@@ -192,7 +193,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 180,
-          label: 'Espalda / Reverso (180°)',
+          label: '2. Espalda / Reverso (180°)',
           badge: 'Reverso 360°',
           badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
           description: 'Color o estampado de la parte trasera.',
@@ -200,15 +201,15 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 90,
-          label: 'Textura / Cierre',
-          badge: 'Detalle',
+          label: '3. Textura / Cierre',
+          badge: 'Detalle Cierre',
           badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
           description: 'Acercamiento a la tela o cremallera.',
           placeholderText: 'Subir Detalle de Tela'
         },
         {
           angleDegree: 45,
-          label: 'Ambientado en Sala/Cama',
+          label: '4. Ambientado en Sala/Cama',
           badge: 'Decorativo',
           badgeColor: 'bg-amber-50 text-amber-700 border-amber-200',
           description: 'Foto decorativa en un sofá o cama.',
@@ -220,7 +221,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
       return [
         {
           angleDegree: 0,
-          label: 'Vista Frontal (0°)',
+          label: '1. Vista Frontal (0°)',
           badge: 'Frente Principal',
           badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
           description: 'Diseño o superficie principal del producto.',
@@ -228,7 +229,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 180,
-          label: 'Vista Posterior / Reverso (180°)',
+          label: '2. Vista Posterior / Reverso (180°)',
           badge: 'Reverso 360°',
           badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
           description: 'Parte trasera o reverso del producto.',
@@ -236,7 +237,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 90,
-          label: 'Vista Lateral o Acabado',
+          label: '3. Vista Lateral o Acabado',
           badge: 'Perfil / Textura',
           badgeColor: 'bg-blue-50 text-blue-700 border-blue-200',
           description: 'Bordes, grosor o acabado del material.',
@@ -244,7 +245,7 @@ export const getAngleSlots = (type: ProductMockupType): AngleSlotConfig[] => {
         },
         {
           angleDegree: 45,
-          label: 'En Uso / Empaque',
+          label: '4. En Uso / Empaque',
           badge: 'Presentación',
           badgeColor: 'bg-amber-50 text-amber-700 border-amber-200',
           description: 'Presentación, empaque o demostración.',
@@ -262,8 +263,10 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
 }) => {
   const [activeUrlSlot, setActiveUrlSlot] = useState<number | null>(null);
   const [urlInputValue, setUrlInputValue] = useState('');
+  const [extraUrlInput, setExtraUrlInput] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const bulkFileInputRef = useRef<HTMLInputElement>(null);
+  const extraFileInputRef = useRef<HTMLInputElement>(null);
 
   const slots = getAngleSlots(mockupType);
 
@@ -288,7 +291,7 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
       const filtered = newImages.filter((img, i) => img !== '' || i < slotIndex);
       
       onChange(filtered.length > 0 ? filtered : [compressedUrl]);
-      showToast?.(`Foto para "${slots[slotIndex]?.label || `Lado ${slotIndex + 1}`}" subida correctamente.`, 'success');
+      showToast?.(`Foto para "${slots[slotIndex]?.label || ('Lado ' + (slotIndex + 1))}" subida correctamente.`, 'success');
     } catch (err) {
       console.error(err);
       showToast?.("Error al procesar la imagen.", "error");
@@ -313,7 +316,7 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
     const filtered = newImages.filter((img, i) => img !== '' || i < slotIndex);
 
     onChange(filtered.length > 0 ? filtered : [urlInputValue.trim()]);
-    showToast?.(`Enlace para "${slots[slotIndex]?.label || `Lado ${slotIndex + 1}`}" asignado.`, 'success');
+    showToast?.(`Enlace para "${slots[slotIndex]?.label || ('Lado ' + (slotIndex + 1))}" asignado.`, 'success');
     setUrlInputValue('');
     setActiveUrlSlot(null);
   };
@@ -326,7 +329,7 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
     showToast?.("Foto eliminada.", "info");
   };
 
-  // Handle multi-file bulk upload (fills slots 1, 2, 3, 4 in sequence)
+  // Handle multi-file bulk upload (fills slots 1, 2, 3, 4 and extra in sequence)
   const handleBulkUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -350,7 +353,7 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
       });
 
       onChange(merged);
-      showToast?.(`¡${compressedList.length} fotos distribuidas en los ángulos del producto!`, 'success');
+      showToast?.(`¡${compressedList.length} fotos cargadas exitosamente!`, 'success');
     } catch (err) {
       console.error(err);
       showToast?.("Error al subir las fotos.", "error");
@@ -360,13 +363,43 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
     }
   };
 
+  // Handle adding extra photos
+  const handleAddExtraPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    try {
+      setIsProcessing(true);
+      const fileArray = Array.from(files);
+      const compressedList = await Promise.all(
+        fileArray.map(f => compressImageFile(f, 1200, 0.8))
+      );
+
+      onChange([...cleanImages, ...compressedList]);
+      showToast?.(`${compressedList.length} foto(s) añadida(s) a la galería.`, 'success');
+    } catch (err) {
+      console.error(err);
+      showToast?.("Error al subir foto extra.", "error");
+    } finally {
+      setIsProcessing(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleAddExtraUrl = () => {
+    if (!extraUrlInput.trim()) return;
+    onChange([...cleanImages, extraUrlInput.trim()]);
+    setExtraUrlInput('');
+    showToast?.("Foto añadida a la galería.", "success");
+  };
+
   // Check if back image is missing for 360 preview
   const hasFront = !!cleanImages[0];
   const hasBack = !!cleanImages[1];
   const showBackReminder = hasFront && !hasBack && (mockupType === 'tshirt' || mockupType === 'hoodie' || mockupType === 'mug' || mockupType === 'bottle');
 
   return (
-    <div className="space-y-4 bg-slate-50/80 p-4 sm:p-5 rounded-3xl border border-slate-200">
+    <div className="space-y-4 bg-slate-50/90 p-4 sm:p-5 rounded-3xl border border-slate-200">
       
       {/* Header / Instructions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-200">
@@ -376,11 +409,11 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
               <RotateCw className="w-4 h-4 animate-spin-slow" />
             </span>
             <h4 className="text-xs sm:text-sm font-bold text-slate-900">
-              Fotografías por Lados / Ángulos (Visor 360°)
+              Fotos del Producto por Lados (Frente, Espalda y Ángulos 360°)
             </h4>
           </div>
           <p className="text-[11px] text-slate-500 mt-0.5">
-            Sube las fotos correspondientes a cada lado para que los clientes puedan rotar e interactuar con el producto en 360°.
+            Sube las fotos correspondientes a cada lado del producto para activar el simulador interactivo 360°.
           </p>
         </div>
 
@@ -398,10 +431,10 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
             type="button"
             onClick={() => bulkFileInputRef.current?.click()}
             disabled={isProcessing}
-            className="px-3 py-1.5 bg-white hover:bg-slate-100 text-indigo-700 border border-indigo-200 hover:border-indigo-300 rounded-xl text-xs font-bold transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
           >
             <Upload className="w-3.5 h-3.5" />
-            <span>Subir varias fotos a la vez</span>
+            <span>⚡ Subir todas las fotos juntas</span>
           </button>
         </div>
       </div>
@@ -412,10 +445,10 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
           <Sparkles className="w-4 h-4 text-purple-600 shrink-0 mt-0.5" />
           <div className="space-y-0.5">
             <p className="font-bold text-purple-900">
-              💡 ¡Foto Frontal Lista! Ahora sube la foto de la Espalda / Reverso (180°)
+              💡 ¡Foto Frontal Lista! Sube ahora la foto de la Espalda / Reverso (Slot #2)
             </p>
             <p className="text-[11px] text-slate-600">
-              Al agregar la foto en el Slot #2 (Espalda), el visor 360° mostrará automáticamente el estampado de ambos lados al rotar el producto.
+              Al colocar la foto de la espalda en el segundo espacio, el visor 360° mostrará automáticamente ambos lados al rotar.
             </p>
           </div>
         </div>
@@ -498,7 +531,7 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
                   </>
                 ) : (
                   /* Empty state dropzone */
-                  <div className="flex flex-col items-center justify-center p-3 text-center space-y-1.5">
+                  <label className="w-full h-full flex flex-col items-center justify-center p-3 text-center space-y-1.5 cursor-pointer hover:bg-slate-200/50 transition-colors">
                     <div className="w-8 h-8 rounded-full bg-slate-200/80 flex items-center justify-center text-slate-500">
                       <Upload className="w-4 h-4" />
                     </div>
@@ -506,9 +539,15 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
                       {slot.placeholderText}
                     </span>
                     <span className="text-[9px] text-slate-400">
-                      PNG, JPG o WebP
+                      Toca para elegir archivo
                     </span>
-                  </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleSlotFileUpload(index, e)}
+                      className="hidden"
+                    />
+                  </label>
                 )}
               </div>
 
@@ -575,23 +614,53 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
         })}
       </div>
 
-      {/* Additional Photos Section (if more than 4 images) */}
-      {cleanImages.length > 4 && (
-        <div className="pt-3 border-t border-slate-200">
-          <h5 className="text-xs font-bold text-slate-700 mb-2">
-            Fotos Adicionales en Galería ({cleanImages.length - 4})
-          </h5>
-          <div className="flex flex-wrap gap-2.5">
+      {/* Additional Photos / Extra Gallery Section */}
+      <div className="pt-3 border-t border-slate-200 space-y-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h5 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+              <ImageIcon className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Fotos Adicionales en Galería ({Math.max(0, cleanImages.length - 4)})</span>
+            </h5>
+            <p className="text-[10px] text-slate-500">
+              ¿Quieres añadir más fotos extra del producto? Puedes agregar tantas como necesites.
+            </p>
+          </div>
+
+          {/* Add extra photo button */}
+          <div className="flex items-center gap-2">
+            <input
+              ref={extraFileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleAddExtraPhoto}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => extraFileInputRef.current?.click()}
+              className="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 rounded-xl text-xs font-semibold transition-all shadow-2xs flex items-center gap-1 cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Añadir foto extra</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Extra photos list */}
+        {cleanImages.length > 4 && (
+          <div className="flex flex-wrap gap-2.5 pt-1">
             {cleanImages.slice(4).map((img, i) => {
               const actualIdx = i + 4;
               return (
-                <div key={actualIdx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-300 group">
+                <div key={actualIdx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-300 group shadow-xs">
                   <img src={img} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                   <button
                     type="button"
                     onClick={() => handleRemoveSlot(actualIdx)}
-                    className="absolute top-1 right-1 p-1 rounded-full bg-rose-600 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                    title="Eliminar"
+                    className="absolute top-1 right-1 p-1 rounded-full bg-rose-600 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-md"
+                    title="Eliminar foto"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -599,8 +668,8 @@ export const MultiAngleImageUploader: React.FC<MultiAngleImageUploaderProps> = (
               );
             })}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
     </div>
   );
